@@ -1,0 +1,97 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Page-1" id="nLLNVhggtKpEwGH640Hv">
+    <mxGraphModel dx="1414" dy="743" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="826.8" pageHeight="826.8" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="SBAS7x_CE5k9vp5IXq3O-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=default;dashed=1;dashPattern=8 8;" value="Controller REST&lt;br&gt;Endpoints de l&#39;API" vertex="1">
+          <mxGeometry height="40" width="239" x="293" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="SBAS7x_CE5k9vp5IXq3O-4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=default;dashed=1;dashPattern=8 8;" value="Service métier&lt;br&gt;Règles et orchestration" vertex="1">
+          <mxGeometry height="40" width="239" x="293" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="SBAS7x_CE5k9vp5IXq3O-5" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=default;dashed=1;dashPattern=8 8;" value="Couche Repository&lt;br&gt;Spring Data" vertex="1">
+          <mxGeometry height="40" width="239" x="143" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="SBAS7x_CE5k9vp5IXq3O-6" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=default;dashed=1;dashPattern=8 8;" value="StorageService&lt;br&gt;Interface" vertex="1">
+          <mxGeometry height="40" width="239" x="444" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="SBAS7x_CE5k9vp5IXq3O-7" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=default;dashed=1;dashPattern=8 8;" value="PostgreSQL&lt;br&gt;Utilisateurs, métadonnées et liens" vertex="1">
+          <mxGeometry height="130" width="239" x="143" y="610" as="geometry" />
+        </mxCell>
+        <mxCell id="SBAS7x_CE5k9vp5IXq3O-9" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="&lt;font style=&quot;font-size: 17px;&quot;&gt;Client Angular&lt;br&gt;&lt;b&gt;Interface utilisateur&lt;/b&gt;&lt;/font&gt;" vertex="1">
+          <mxGeometry height="90" width="270" x="277.5" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="SBAS7x_CE5k9vp5IXq3O-10" edge="1" parent="1" source="SBAS7x_CE5k9vp5IXq3O-9" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="SBAS7x_CE5k9vp5IXq3O-8" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="394" y="410" as="sourcePoint" />
+            <mxPoint x="412.5" y="190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SBAS7x_CE5k9vp5IXq3O-8" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=#FF0000;dashed=1;dashPattern=8 8;" value="Filtres Spring Security&lt;br&gt;JWT - Authentification" vertex="1">
+          <mxGeometry height="40" width="239" x="293" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="SBAS7x_CE5k9vp5IXq3O-12" edge="1" parent="1" source="SBAS7x_CE5k9vp5IXq3O-1" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="SBAS7x_CE5k9vp5IXq3O-4" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="394" y="410" as="sourcePoint" />
+            <mxPoint x="414" y="390" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SBAS7x_CE5k9vp5IXq3O-15" edge="1" parent="1" source="SBAS7x_CE5k9vp5IXq3O-5" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="SBAS7x_CE5k9vp5IXq3O-7" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="394" y="410" as="sourcePoint" />
+            <mxPoint x="444" y="360" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SBAS7x_CE5k9vp5IXq3O-18" edge="1" parent="1" source="SBAS7x_CE5k9vp5IXq3O-4" style="edgeStyle=elbowEdgeStyle;elbow=vertical;endArrow=classic;html=1;curved=0;rounded=0;endSize=8;startSize=8;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="SBAS7x_CE5k9vp5IXq3O-5" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="344" y="470" />
+            </Array>
+            <mxPoint x="224" y="570" as="sourcePoint" />
+            <mxPoint x="274" y="520" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SBAS7x_CE5k9vp5IXq3O-19" edge="1" parent="1" source="SBAS7x_CE5k9vp5IXq3O-4" style="edgeStyle=elbowEdgeStyle;elbow=vertical;endArrow=classic;html=1;curved=0;rounded=0;endSize=8;startSize=8;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="SBAS7x_CE5k9vp5IXq3O-6" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="494" y="470" />
+            </Array>
+            <mxPoint x="454" y="560" as="sourcePoint" />
+            <mxPoint x="504" y="510" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SBAS7x_CE5k9vp5IXq3O-21" edge="1" parent="1" source="SBAS7x_CE5k9vp5IXq3O-8" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="SBAS7x_CE5k9vp5IXq3O-1" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="644" y="300" as="sourcePoint" />
+            <mxPoint x="644" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SBAS7x_CE5k9vp5IXq3O-25" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=default;dashed=1;dashPattern=8 8;" value="LocalStorage" vertex="1">
+          <mxGeometry height="130" width="110" x="444" y="610" as="geometry" />
+        </mxCell>
+        <mxCell id="SBAS7x_CE5k9vp5IXq3O-26" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeColor=default;dashed=1;dashPattern=8 8;" value="Volume Docker" vertex="1">
+          <mxGeometry height="130" width="110" x="573" y="610" as="geometry" />
+        </mxCell>
+        <mxCell id="SBAS7x_CE5k9vp5IXq3O-28" edge="1" parent="1" source="SBAS7x_CE5k9vp5IXq3O-6" style="endArrow=classic;html=1;rounded=0;exitX=0.23;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitPerimeter=0;" target="SBAS7x_CE5k9vp5IXq3O-25" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="754" y="460" as="sourcePoint" />
+            <mxPoint x="754" y="510" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SBAS7x_CE5k9vp5IXq3O-29" edge="1" parent="1" source="SBAS7x_CE5k9vp5IXq3O-6" style="endArrow=classic;html=1;rounded=0;exitX=0.75;exitY=1;exitDx=0;exitDy=0;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="734" y="640" as="sourcePoint" />
+            <mxPoint x="624" y="610" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SBAS7x_CE5k9vp5IXq3O-31" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;autosize=1;resizable=0;" value="HTTPS" vertex="1">
+          <mxGeometry height="30" width="60" x="414" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="SBAS7x_CE5k9vp5IXq3O-32" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;autosize=1;resizable=0;" value="JDBC" vertex="1">
+          <mxGeometry height="30" width="50" x="264" y="570" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
