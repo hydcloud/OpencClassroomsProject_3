@@ -5,6 +5,9 @@ import fr.datashare.backend.dto.auth.UserResponse;
 import fr.datashare.backend.entity.User;
 import fr.datashare.backend.exception.EmailAlreadyExistsException;
 import fr.datashare.backend.repository.UserRepository;
+import fr.datashare.backend.dto.auth.LoginRequest;
+import fr.datashare.backend.dto.auth.LoginResponse;
+import fr.datashare.backend.exception.InvalidCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,5 +46,26 @@ public class AuthService {
                 savedUser.getEmail(),
                 savedUser.getCreatedAt()
         );
+    }
+
+    public LoginResponse login(LoginRequest request) {
+
+        String normalizedEmail = request.email()
+                .trim()
+                .toLowerCase();
+
+        User user = userRepository.findByEmail(normalizedEmail)
+                .orElseThrow(InvalidCredentialsException::new);
+
+        boolean passwordMatches = passwordEncoder.matches(
+                request.password(),
+                user.getPassword()
+        );
+
+        if (!passwordMatches) {
+            throw new InvalidCredentialsException();
+        }
+
+        return new LoginResponse("TOKEN_A_VENIR");
     }
 }
