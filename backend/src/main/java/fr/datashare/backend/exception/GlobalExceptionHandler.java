@@ -89,4 +89,36 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(response);
     }
+
+    @ExceptionHandler(DownloadLinkNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleDownloadLinkNotFound(
+            DownloadLinkNotFoundException exception
+    ) {
+        ErrorResponse response = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                exception.getMessage()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(response);
+    }
+
+    @ExceptionHandler(DownloadLinkExpiredException.class)
+    public ResponseEntity<ErrorResponse> handleDownloadLinkExpired(
+            DownloadLinkExpiredException exception
+    ) {
+        ErrorResponse response = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.GONE.value(),
+                HttpStatus.GONE.getReasonPhrase(),
+                exception.getMessage()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.GONE)
+                .body(response);
+    }
 }

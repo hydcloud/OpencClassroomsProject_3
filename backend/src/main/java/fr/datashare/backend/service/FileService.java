@@ -9,6 +9,8 @@ import fr.datashare.backend.repository.DownloadLinkRepository;
 import fr.datashare.backend.repository.StoredFileRepository;
 import fr.datashare.backend.repository.UserRepository;
 import fr.datashare.backend.storage.StorageService;
+import fr.datashare.backend.dto.file.FileHistoryResponse;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
+import java.util.List;
 
 @Service
 public class FileService {
@@ -111,6 +114,34 @@ public class FileService {
                     exception
             );
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<FileHistoryResponse> getHistory(String email) {
+
+        User owner = userRepository
+                .findByEmail(email)
+                .orElseThrow(() ->
+                        new FileUploadException(
+                                "Utilisateur introuvable."
+                        )
+                );
+
+        List<StoredFile> files =
+                storedFileRepository
+                        .findAllByOwnerOrderByUploadedAtDesc(owner);
+
+        return files.stream()
+                .map(file -> new FileHistoryResponse(
+                        file.getId(),
+                        file.getOriginalName(),
+                        file.getMimeType(),
+                        file.getSize(),
+                        file.getUploadedAt(),
+                        file.getExpiresAt(),
+                        file.getDownloadLink().getToken()
+                ))
+                .toList();
     }
 
     private void validateFile(MultipartFile file) {
