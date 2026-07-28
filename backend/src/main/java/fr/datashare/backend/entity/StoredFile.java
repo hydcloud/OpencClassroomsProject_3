@@ -98,4 +98,15 @@ public class StoredFile {
     public void setOwner(User owner) {
         this.owner = owner;
     }
+
+    @OneToOne(mappedBy = "storedFile", fetch = FetchType.LAZY)
+    private DownloadLink downloadLink;
+
+    public DownloadLink getDownloadLink() {
+        return downloadLink;
+    }
+
+    public void setDownloadLink(DownloadLink downloadLink) {
+        this.downloadLink = downloadLink;
+    }
 }
