@@ -5,6 +5,7 @@ import fr.datashare.backend.entity.DownloadLink;
 import fr.datashare.backend.entity.StoredFile;
 import fr.datashare.backend.entity.User;
 import fr.datashare.backend.exception.FileUploadException;
+import fr.datashare.backend.exception.FileNotFoundException;
 import fr.datashare.backend.repository.DownloadLinkRepository;
 import fr.datashare.backend.repository.StoredFileRepository;
 import fr.datashare.backend.repository.UserRepository;
@@ -210,5 +211,25 @@ public class FileService {
         return filename
                 .substring(filename.lastIndexOf('.') + 1)
                 .toLowerCase(Locale.ROOT);
+    }
+
+    @Transactional
+    public void deleteFile(Long fileId, String authenticatedEmail) {
+
+        User owner = userRepository
+                .findByEmail(authenticatedEmail)
+                .orElseThrow(FileNotFoundException::new);
+
+        StoredFile storedFile = storedFileRepository
+                .findById(fileId)
+                .orElseThrow(FileNotFoundException::new);
+
+        if (!storedFile.getOwner().getId().equals(owner.getId())) {
+            throw new FileNotFoundException();
+        }
+
+        storageService.delete(storedFile.getStorageName());
+
+        storedFileRepository.delete(storedFile);
     }
 }

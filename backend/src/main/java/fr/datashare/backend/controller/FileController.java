@@ -49,4 +49,17 @@ public class FileController {
                 authentication.getName()
         );
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+        fileService.deleteFile(
+                id,
+                authentication.getName()
+        );
+
+        return ResponseEntity.noContent().build();
+    }
 }

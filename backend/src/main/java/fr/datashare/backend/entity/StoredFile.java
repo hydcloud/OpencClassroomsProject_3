@@ -99,7 +99,12 @@ public class StoredFile {
         this.owner = owner;
     }
 
-    @OneToOne(mappedBy = "storedFile", fetch = FetchType.LAZY)
+    @OneToOne(
+            mappedBy = "storedFile",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private DownloadLink downloadLink;
 
     public DownloadLink getDownloadLink() {
