@@ -8,7 +8,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import fr.datashare.backend.dto.download.DownloadMetadataResponse;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
@@ -62,4 +68,48 @@ public class FileController {
 
         return ResponseEntity.noContent().build();
     }
+
+        @GetMapping("/{token}")
+        public ResponseEntity<DownloadMetadataResponse> getMetadata(
+                @PathVariable String token
+        ) {
+            return ResponseEntity.ok(
+                    fileService.getDownloadMetadata(token)
+            );
+        }
+
+        @GetMapping("/{token}/file")
+        public ResponseEntity<Resource> download(
+                @PathVariable String token
+        ) {
+            FileService.DownloadResource download =
+                    fileService.loadDownloadFile(token);
+
+            MediaType mediaType;
+
+            try {
+                mediaType = MediaType.parseMediaType(
+                        download.mimeType()
+                );
+            } catch (IllegalArgumentException exception) {
+                mediaType = MediaType.APPLICATION_OCTET_STREAM;
+            }
+
+            ContentDisposition contentDisposition =
+                    ContentDisposition.attachment()
+                            .filename(
+                                    download.originalName(),
+                                    StandardCharsets.UTF_8
+                            )
+                            .build();
+
+            return ResponseEntity.ok()
+                    .contentType(mediaType)
+                    .header(
+                            HttpHeaders.CONTENT_DISPOSITION,
+                            contentDisposition.toString()
+                    )
+                    .body(download.resource());
+        }
+
 }
