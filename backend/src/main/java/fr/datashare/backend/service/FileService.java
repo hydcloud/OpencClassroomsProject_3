@@ -11,6 +11,10 @@ import fr.datashare.backend.repository.StoredFileRepository;
 import fr.datashare.backend.repository.UserRepository;
 import fr.datashare.backend.storage.StorageService;
 import fr.datashare.backend.dto.file.FileHistoryResponse;
+import fr.datashare.backend.dto.download.DownloadMetadataResponse;
+import fr.datashare.backend.exception.DownloadLinkExpiredException;
+import fr.datashare.backend.exception.DownloadLinkNotFoundException;
+import org.springframework.core.io.Resource;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +56,54 @@ public class FileService {
         this.storedFileRepository = storedFileRepository;
         this.downloadLinkRepository = downloadLinkRepository;
         this.storageService = storageService;
+    }
+
+    @Transactional(readOnly = true)
+    public DownloadMetadataResponse getDownloadMetadata(String token) {
+        DownloadLink downloadLink = findValidDownloadLink(token);
+        StoredFile storedFile = downloadLink.getStoredFile();
+
+        return new DownloadMetadataResponse(
+                storedFile.getOriginalName(),
+                storedFile.getMimeType(),
+                storedFile.getSize(),
+                downloadLink.getExpiresAt()
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public DownloadResource loadDownloadFile(String token) {
+        DownloadLink downloadLink = findValidDownloadLink(token);
+        StoredFile storedFile = downloadLink.getStoredFile();
+
+        Resource resource = storageService.load(
+                storedFile.getStorageName()
+        );
+
+        return new DownloadResource(
+                resource,
+                storedFile.getOriginalName(),
+                storedFile.getMimeType()
+        );
+    }
+
+    private DownloadLink findValidDownloadLink(String token) {
+        DownloadLink downloadLink = downloadLinkRepository
+                .findByToken(token)
+                .orElseThrow(DownloadLinkNotFoundException::new);
+
+        if (downloadLink.getExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new DownloadLinkExpiredException();
+        }
+
+        return downloadLink;
+    }
+
+    public record DownloadResource(
+            Resource resource,
+            String originalName,
+            String mimeType
+    ) {
     }
 
     @Transactional
