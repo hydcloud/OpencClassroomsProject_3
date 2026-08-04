@@ -1,0 +1,73 @@
+<main class="files-page">
+
+    <section class="upload-section">
+        <h2>Envoyer un fichier</h2>
+
+        <form (ngSubmit)="onUpload()">
+            <label for="file">Fichier</label>
+
+            <input id="file" type="file" (change)="onFileSelected($event)" />
+
+            <label for="expirationDays">
+                Durée de validité
+            </label>
+
+            <select id="expirationDays" name="expirationDays" [(ngModel)]="expirationDays">
+                <option [ngValue]="1">1 jour</option>
+                <option [ngValue]="3">3 jours</option>
+                <option [ngValue]="7">7 jours</option>
+                <option [ngValue]="14">14 jours</option>
+                <option [ngValue]="30">30 jours</option>
+            </select>
+
+            <button type="submit" [disabled]="isUploading || !selectedFile">
+                {{ isUploading ? 'Envoi en cours...' : 'Envoyer' }}
+            </button>
+        </form>
+
+        @if (selectedFile) {
+        <p>
+            Fichier sélectionné :
+            {{ selectedFile.name }}
+        </p>
+        }
+
+        @if (successMessage) {
+        <p class="success-message">
+            {{ successMessage }}
+        </p>
+        }
+    </section>
+    <section class="files-card">
+        <h1>Mes fichiers</h1>
+
+        @if (isLoading) {
+        <p>Chargement des fichiers...</p>
+        }
+
+        @if (errorMessage) {
+        <p class="error-message">
+            {{ errorMessage }}
+        </p>
+        }
+
+        @if (!isLoading && !errorMessage && files.length === 0) {
+        <p>Aucun fichier pour le moment.</p>
+        }
+
+        @if (!isLoading && files.length > 0) {
+        <div class="files-list">
+            @for (file of files; track file.id) {
+            <article class="file-item">
+                <h2>{{ file.originalName }}</h2>
+
+                <p>Type : {{ file.mimeType }}</p>
+                <p>Taille : {{ file.size }} octets</p>
+                <p>Déposé le : {{ file.uploadedAt }}</p>
+                <p>Expire le : {{ file.expiresAt }}</p>
+            </article>
+            }
+        </div>
+        }
+    </section>
+</main>

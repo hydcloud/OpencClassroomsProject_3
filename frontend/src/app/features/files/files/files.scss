@@ -1,0 +1,50 @@
+.files-page {
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.files-card {
+  max-width: 60rem;
+  margin: 0 auto;
+}
+
+.files-list {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.file-item {
+  padding: 1rem;
+  border: 1px solid #d8d8d8;
+  border-radius: 0.75rem;
+}
+
+.file-item h2 {
+  margin-top: 0;
+}
+
+.error-message {
+  font-weight: 600;
+}
+
+.upload-section {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  border: 1px solid #d8d8d8;
+  border-radius: 0.75rem;
+}
+
+.upload-section form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.upload-section button {
+  width: fit-content;
+  padding: 0.75rem 1rem;
+}
+
+.success-message {
+  font-weight: 600;
+}

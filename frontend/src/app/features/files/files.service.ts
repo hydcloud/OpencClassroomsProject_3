@@ -1,21 +1,35 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
+import { FileHistoryResponse } from '../../models/file-history-response';
+import { FileUploadResponse } from '../../models/file-upload-response';
+
 @Injectable({
   providedIn: 'root'
 })
-export class FileService {
+export class FilesService {
+  private readonly apiUrl = `${environment.apiUrl}/files`;
 
-  private readonly apiUrl = environment.apiUrl;
+  constructor(private readonly http: HttpClient) {}
 
-  constructor(private http: HttpClient) {}
-
-  getFiles() {
-    return this.http.get(`${this.apiUrl}/files`);
+  getHistory(): Observable<FileHistoryResponse[]> {
+    return this.http.get<FileHistoryResponse[]>(this.apiUrl);
   }
 
-  upload(formData: FormData) {
-    return this.http.post(`${this.apiUrl}/files`, formData);
+  upload(
+    file: File,
+    expirationDays: number
+  ): Observable<FileUploadResponse> {
+    const formData = new FormData();
+
+    formData.append('file', file);
+    formData.append('expirationDays', expirationDays.toString());
+
+    return this.http.post<FileUploadResponse>(
+      this.apiUrl,
+      formData
+    );
   }
 }
