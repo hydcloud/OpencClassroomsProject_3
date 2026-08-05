@@ -41,4 +41,16 @@ export class FilesService {
       `${this.apiUrl}/${id}`
     )
   }
+
+  downloadFile(
+    token: string
+  ):
+    Observable<Blob> {
+    return this.http.get(
+      `${this.apiUrl}/${token}/file`,
+      {
+        responseType: 'blob'
+      }
+    );
+  }
 }

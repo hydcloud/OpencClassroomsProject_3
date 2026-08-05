@@ -171,4 +171,28 @@ export class Files implements OnInit {
       }
     });
   }
+
+  onDownload(file: FileHistoryResponse): void {
+    this.filesService
+      .downloadFile(file.downloadToken)
+      .subscribe({
+        next: blob => {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = file.originalName;
+          link.click();
+          URL.revokeObjectURL(url);
+        },
+        error: error => {
+          console.error(
+            'Erreur lors du téléchargement :',
+            error
+          );
+
+          this.errorMessage =
+            'Impossible de télécharger le fichier.';
+        }
+      });
+  }
 }

@@ -73,12 +73,12 @@
                     {{ file.expiresAt | date:'dd/MM/yyyy à HH:mm' }}
                 </p>
             </article>
-            <button
-  type="button"
-  (click)="onDelete(file.id)"
->
-  Supprimer
-</button>
+            <button type="button" (click)="onDelete(file.id)">
+                Supprimer
+            </button>
+            <button type="button" (click)="onDownload(file)">
+                Télécharger
+            </button>
             }
         </div>
         }
