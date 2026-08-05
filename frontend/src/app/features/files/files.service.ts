@@ -12,7 +12,7 @@ import { FileUploadResponse } from '../../models/file-upload-response';
 export class FilesService {
   private readonly apiUrl = `${environment.apiUrl}/files`;
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(private readonly http: HttpClient) { }
 
   getHistory(): Observable<FileHistoryResponse[]> {
     return this.http.get<FileHistoryResponse[]>(this.apiUrl);
@@ -31,5 +31,14 @@ export class FilesService {
       this.apiUrl,
       formData
     );
+  }
+
+  deleteFile(
+    id: number
+  ):
+    Observable<void> {
+    return this.http.delete<void>(
+      `${this.apiUrl}/${id}`
+    )
   }
 }

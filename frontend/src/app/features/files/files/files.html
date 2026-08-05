@@ -61,11 +61,24 @@
             <article class="file-item">
                 <h2>{{ file.originalName }}</h2>
 
-                <p>Type : {{ file.mimeType }}</p>
-                <p>Taille : {{ file.size }} octets</p>
-                <p>Déposé le : {{ file.uploadedAt }}</p>
-                <p>Expire le : {{ file.expiresAt }}</p>
+                <p>Type : {{ getFileTypeLabel(file.mimeType) }}</p>
+                <p>Taille : {{ formatFileSize(file.size) }}</p>
+                <p>
+                    Déposé le :
+                    {{ file.uploadedAt | date:'dd/MM/yyyy à HH:mm' }}
+                </p>
+
+                <p>
+                    Expire le :
+                    {{ file.expiresAt | date:'dd/MM/yyyy à HH:mm' }}
+                </p>
             </article>
+            <button
+  type="button"
+  (click)="onDelete(file.id)"
+>
+  Supprimer
+</button>
             }
         </div>
         }
