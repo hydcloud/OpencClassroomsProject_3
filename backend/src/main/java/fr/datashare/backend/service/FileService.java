@@ -88,6 +88,7 @@ public class FileService {
     }
 
     private DownloadLink findValidDownloadLink(String token) {
+
         DownloadLink downloadLink = downloadLinkRepository
                 .findByToken(token)
                 .orElseThrow(DownloadLinkNotFoundException::new);

@@ -6,6 +6,9 @@ import { FileHistoryResponse } from '../../../models/file-history-response';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 
+import { Router } from '@angular/router';
+import { AuthService } from '../../auth/auth.service';
+
 @Component({
   selector: 'app-files',
   imports: [FormsModule, DatePipe],
@@ -25,6 +28,8 @@ export class Files implements OnInit {
 
   constructor(
     private readonly filesService: FilesService,
+    private readonly authService: AuthService,
+    private readonly router: Router,
     private readonly changeDetectorRef: ChangeDetectorRef
   ) { }
 
@@ -194,5 +199,10 @@ export class Files implements OnInit {
             'Impossible de télécharger le fichier.';
         }
       });
+  }
+
+  onLogout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

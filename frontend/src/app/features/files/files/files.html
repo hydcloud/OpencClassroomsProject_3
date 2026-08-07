@@ -1,86 +1,255 @@
 <main class="files-page">
 
-    <section class="upload-section">
-        <h2>Envoyer un fichier</h2>
+    <!-- Barre verticale gauche -->
+    <aside class="side-nav">
 
-        <form (ngSubmit)="onUpload()">
-            <label for="file">Fichier</label>
-
-            <input id="file" type="file" (change)="onFileSelected($event)" />
-
-            <label for="expirationDays">
-                Durée de validité
-            </label>
-
-            <select id="expirationDays" name="expirationDays" [(ngModel)]="expirationDays">
-                <option [ngValue]="1">1 jour</option>
-                <option [ngValue]="3">3 jours</option>
-                <option [ngValue]="7">7 jours</option>
-                <option [ngValue]="14">14 jours</option>
-                <option [ngValue]="30">30 jours</option>
-            </select>
-
-            <button type="submit" [disabled]="isUploading || !selectedFile">
-                {{ isUploading ? 'Envoi en cours...' : 'Envoyer' }}
-            </button>
-        </form>
-
-        @if (selectedFile) {
-        <p>
-            Fichier sélectionné :
-            {{ selectedFile.name }}
-        </p>
-        }
-
-        @if (successMessage) {
-        <p class="success-message">
-            {{ successMessage }}
-        </p>
-        }
-    </section>
-    <section class="files-card">
-        <h1>Mes fichiers</h1>
-
-        @if (isLoading) {
-        <p>Chargement des fichiers...</p>
-        }
-
-        @if (errorMessage) {
-        <p class="error-message">
-            {{ errorMessage }}
-        </p>
-        }
-
-        @if (!isLoading && !errorMessage && files.length === 0) {
-        <p>Aucun fichier pour le moment.</p>
-        }
-
-        @if (!isLoading && files.length > 0) {
-        <div class="files-list">
-            @for (file of files; track file.id) {
-            <article class="file-item">
-                <h2>{{ file.originalName }}</h2>
-
-                <p>Type : {{ getFileTypeLabel(file.mimeType) }}</p>
-                <p>Taille : {{ formatFileSize(file.size) }}</p>
-                <p>
-                    Déposé le :
-                    {{ file.uploadedAt | date:'dd/MM/yyyy à HH:mm' }}
-                </p>
-
-                <p>
-                    Expire le :
-                    {{ file.expiresAt | date:'dd/MM/yyyy à HH:mm' }}
-                </p>
-            </article>
-            <button type="button" (click)="onDelete(file.id)">
-                Supprimer
-            </button>
-            <button type="button" (click)="onDownload(file)">
-                Télécharger
-            </button>
-            }
+        <div class="brand">
+            <span>DATASHARE</span>
         </div>
-        }
-    </section>
+
+        <button type="button" class="nav-item nav-item-active" aria-label="Envoyer un fichier">
+            <span class="nav-icon">↑</span>
+            <span>Envoyer</span>
+        </button>
+
+        <button type="button" class="nav-item" aria-label="Mes fichiers">
+            <span class="nav-icon">▣</span>
+            <span>Fichiers</span>
+        </button>
+
+    </aside>
+
+
+    <!-- Toute la zone située à droite de la sidebar -->
+    <div class="workspace">
+
+        <!-- Barre supérieure -->
+        <header class="top-bar">
+
+            <div class="account-box">
+                <div class="account-info">
+                    <strong>Mon compte</strong>
+                    <span>DataShare</span>
+                </div>
+
+                <button type="button" class="logout-button" (click)="onLogout()">
+                    Deconnexion
+                </button>
+            </div>
+
+        </header>
+
+
+        <div class="page-content">
+
+            <!-- Carte d'upload -->
+            <section class="upload-section">
+
+                <div class="upload-header">
+                    <div class="upload-icon">+</div>
+
+                    <div>
+                        <h2>Envoyer un fichier</h2>
+                        <p>Partagez votre fichier simplement.</p>
+                    </div>
+                </div>
+
+
+                <form (ngSubmit)="onUpload()">
+
+                    <div class="form-group">
+                        <label for="file">
+                            Fichier
+                        </label>
+
+                        <input id="file" type="file" (change)="onFileSelected($event)" />
+                    </div>
+
+
+                    @if (selectedFile) {
+                    <div class="selected-file">
+                        <strong>{{ selectedFile.name }}</strong>
+                    </div>
+                    }
+
+
+                    <div class="form-group">
+                        <label for="expirationDays">
+                            Durée de validité
+                        </label>
+
+                        <select id="expirationDays" name="expirationDays" [(ngModel)]="expirationDays">
+                            <option [ngValue]="1">1 jour</option>
+                            <option [ngValue]="3">3 jours</option>
+                            <option [ngValue]="7">7 jours</option>
+                            <option [ngValue]="14">14 jours</option>
+                            <option [ngValue]="30">30 jours</option>
+                        </select>
+                    </div>
+
+
+                    <button class="upload-button" type="submit" [disabled]="isUploading || !selectedFile">
+                        {{ isUploading ? 'Envoi en cours...' : 'Transférer' }}
+                    </button>
+
+                </form>
+
+
+                @if (successMessage) {
+                <p class="success-message">
+                    {{ successMessage }}
+                </p>
+                }
+
+            </section>
+
+
+            <!-- Partie centrale -->
+            <section class="files-card">
+
+                <div class="files-header">
+
+                    <div>
+                        <span class="section-label">
+                            DATASHARE
+                        </span>
+
+                        <h1>Mes fichiers</h1>
+
+                        <p>
+                            Retrouvez vos fichiers envoyés et leur date
+                            d'expiration.
+                        </p>
+                    </div>
+
+                    @if (!isLoading && files.length > 0) {
+                    <div class="files-count">
+                        {{ files.length }}
+                        {{ files.length === 1 ? 'fichier' : 'fichiers' }}
+                    </div>
+                    }
+
+                </div>
+
+
+                @if (isLoading) {
+                <div class="state-message">
+                    Chargement des fichiers...
+                </div>
+                }
+
+
+                @if (errorMessage) {
+                <div class="error-message">
+                    {{ errorMessage }}
+                </div>
+                }
+
+
+                @if (!isLoading && !errorMessage && files.length === 0) {
+                <div class="empty-state">
+
+                    <div class="empty-icon">
+                        +
+                    </div>
+
+                    <h2>Aucun fichier</h2>
+
+                    <p>
+                        Votre historique apparaîtra ici après
+                        votre premier transfert.
+                    </p>
+
+                </div>
+                }
+
+
+                @if (!isLoading && files.length > 0) {
+
+                <div class="files-list">
+
+                    @for (file of files; track file.id) {
+
+                    <article class="file-item">
+
+                        <div class="file-main">
+
+                            <div class="file-icon">
+                                ▤
+                            </div>
+
+                            <div class="file-information">
+
+                                <h2>
+                                    {{ file.originalName }}
+                                </h2>
+
+                                <div class="file-meta">
+
+                                    <span>
+                                        {{ getFileTypeLabel(file.mimeType) }}
+                                    </span>
+
+                                    <span>
+                                        {{ formatFileSize(file.size) }}
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="file-dates">
+
+                            <div>
+                                <span class="date-label">
+                                    Déposé
+                                </span>
+
+                                <strong>
+                                    {{ file.uploadedAt | date:'dd/MM/yyyy à HH:mm' }}
+                                </strong>
+                            </div>
+
+                            <div>
+                                <span class="date-label">
+                                    Expire
+                                </span>
+
+                                <strong>
+                                    {{ file.expiresAt | date:'dd/MM/yyyy à HH:mm' }}
+                                </strong>
+                            </div>
+
+                        </div>
+
+
+                        <div class="file-actions">
+
+                            <button type="button" class="download-button" (click)="onDownload(file)">
+                                Télécharger
+                            </button>
+
+                            <button type="button" class="delete-button" (click)="onDelete(file.id)">
+                                Supprimer
+                            </button>
+
+                        </div>
+
+                    </article>
+
+                    }
+
+                </div>
+
+                }
+
+            </section>
+
+        </div>
+
+    </div>
+
 </main>
