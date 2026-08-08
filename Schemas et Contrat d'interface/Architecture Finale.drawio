@@ -1,0 +1,292 @@
+<mxfile host="Electron">
+  <diagram name="Page-1" id="t2Hg6Pbl_OhVSOezdEyo">
+    <mxGraphModel dx="2060" dy="1252" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="560" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-28" parent="1" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;" value="&lt;div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;b&gt;FileController&lt;/b&gt;&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="140" width="1330" x="180" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="POST&lt;br&gt;/api/files&lt;br&gt;(upload)" vertex="1">
+          <mxGeometry height="60" width="120" x="225" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="GET&lt;br&gt;/api/files&lt;br&gt;(historique)" vertex="1">
+          <mxGeometry height="60" width="120" x="505" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="GET&lt;br&gt;/api/files/{token}&lt;br&gt;(métadonnées)" vertex="1">
+          <mxGeometry height="60" width="120" x="785" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="GET&lt;br&gt;/api/files/{token}/file&lt;br&gt;(téléchargement)" vertex="1">
+          <mxGeometry height="60" width="120" x="1065" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-5" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="DELETE&lt;br&gt;/api/files/{id}&lt;br&gt;(suppression)" vertex="1">
+          <mxGeometry height="60" width="120" x="1345" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-7" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;UploadService&lt;br&gt;&lt;/b&gt;&lt;div&gt;Gestion de l&#39;upload&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- gestion de l&#39;upload&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- stockage physique&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- enregistrement métadonnées&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- création du lien de téléchargement&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="210" x="180" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-8" parent="1" style="rounded=0;whiteSpace=wrap;html=1;rotation=0;fillColor=#e1d5e7;strokeColor=#9673a6;" value="&lt;b&gt;UserRepository&lt;br&gt;&lt;/b&gt;&lt;div&gt;Accès aux données User&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- findByEmail()&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- existsByEmail()&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- save&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="245" x="22" y="850" as="geometry" />
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-9" parent="1" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;" value="&lt;b&gt;Base de données (PostGreSQL)&lt;/b&gt;&lt;div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="140" width="800" x="22" y="1020" as="geometry" />
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-11" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Table users&lt;div&gt;(User)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="150" x="102" y="1070" as="geometry" />
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-12" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Table stored_files&lt;div&gt;(StoredFile)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="150" x="349.5" y="1070" as="geometry" />
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-13" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Table download_links&lt;div&gt;(DownloadLink)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="150" x="602" y="1070" as="geometry" />
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-14" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="&lt;b&gt;StoredFileRepository&lt;br&gt;&lt;/b&gt;&lt;div&gt;Accès aux métadonnées des fichiers&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- save()&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- findById()&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- findAllByOwnerOrderByUploadedAtDesc()&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- delete()&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="245" x="302" y="850" as="geometry" />
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-15" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="&lt;b&gt;DownloadLinkRepository&lt;br&gt;&lt;/b&gt;&lt;div&gt;Accès aux liens de téléchargement&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- save()&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- findByToken()&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- existsByToken()&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- deleteByStoredFileId()&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="245" x="582" y="850" as="geometry" />
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-17" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="&lt;div&gt;&lt;b&gt;StorageService&lt;/b&gt;&lt;/div&gt;&lt;div&gt;Accès aux fichiers physiques&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- store(file)&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- load(storageName)&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- delete(storageName)&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="245" x="725" y="650" as="geometry" />
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-18" parent="1" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;" value="&lt;div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;b&gt;Stockage physique&lt;/b&gt;&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="140" width="800" x="862.5" y="1020" as="geometry" />
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-20" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="&lt;div&gt;uploads/&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="150" x="1190" y="1070" as="geometry" />
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-21" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="&lt;b&gt;StoredFileRepository&lt;br&gt;&lt;/b&gt;&lt;div&gt;Accès aux métadonnées des fichiers&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- save()&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- findById()&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- findAllByOwnerOrderByUploadedAtDesc()&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- delete()&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="245" x="1142.5" y="850" as="geometry" />
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-22" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="&lt;b&gt;DownloadLinkRepository&lt;br&gt;&lt;/b&gt;&lt;div&gt;Accès aux liens de téléchargement&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- save()&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- findByToken()&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- existsByToken()&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- deleteByStoredFileId()&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="245" x="1422.5" y="850" as="geometry" />
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-23" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="&lt;div&gt;&lt;b&gt;DownloadLinkService&lt;/b&gt;&lt;/div&gt;&lt;div&gt;Gestion des liens de téléchargement&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- génération de token unique&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- création du lien&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- recherche et validation du lien&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- suppression des liens associés au fichier&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="240" x="725" y="410" as="geometry" />
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-24" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;b&gt;FileHistoryService&lt;br&gt;&lt;/b&gt;&lt;div&gt;Historique des fichiers d&#39;un utilisateur&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- récupère l&#39;utilisateur&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- récupère les métadonnées&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- construit la réponse&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="210" x="460" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-25" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;div&gt;&lt;b&gt;DownloadService (métadonnées)&lt;/b&gt;&lt;/div&gt;&lt;div&gt;Récupèration des métadonnées d&#39;un fichier via Token&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- validation du lien&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- récupération des métadonnées&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- construit la réponse&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="210" x="740" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-26" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;div&gt;&lt;b&gt;DownloadService (fichier)&lt;/b&gt;&lt;/div&gt;&lt;div&gt;Téléchargement du fichier via Token&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- validation du lien (via DownloadLinkService)&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- récupération du fichier physique&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- retourne le fichier&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="250" x="1000" y="410" as="geometry" />
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-27" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;div&gt;&lt;b&gt;FileDeletionService&lt;/b&gt;&lt;/div&gt;&lt;div&gt;Suppression d&#39;un fichier&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- vérifie le propriétaire&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- supprime le fichier physique&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- supprime les métadonnées&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- supprime le lien de téléchargement&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="210" x="1300" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-29" edge="1" parent="1" source="_koK5YsaPc1IFmUN-0YD-1" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="_koK5YsaPc1IFmUN-0YD-7" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="820" y="450" as="sourcePoint" />
+            <mxPoint x="870" y="400" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-30" edge="1" parent="1" source="_koK5YsaPc1IFmUN-0YD-2" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="_koK5YsaPc1IFmUN-0YD-24" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="460" y="220" as="sourcePoint" />
+            <mxPoint x="460" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-31" edge="1" parent="1" source="_koK5YsaPc1IFmUN-0YD-3" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="_koK5YsaPc1IFmUN-0YD-25" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="640" y="270" as="sourcePoint" />
+            <mxPoint x="640" y="340" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-32" edge="1" parent="1" source="_koK5YsaPc1IFmUN-0YD-4" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="_koK5YsaPc1IFmUN-0YD-26" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="1000" y="240" as="sourcePoint" />
+            <mxPoint x="1000" y="310" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-33" edge="1" parent="1" source="_koK5YsaPc1IFmUN-0YD-5" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="_koK5YsaPc1IFmUN-0YD-27" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="1210" y="330" as="sourcePoint" />
+            <mxPoint x="1210" y="590" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-34" edge="1" parent="1" source="_koK5YsaPc1IFmUN-0YD-7" style="endArrow=classic;html=1;rounded=0;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="_koK5YsaPc1IFmUN-0YD-8" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="232.5" y="470" />
+              <mxPoint x="145" y="470" />
+            </Array>
+            <mxPoint x="820" y="450" as="sourcePoint" />
+            <mxPoint x="870" y="400" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-36" edge="1" parent="1" source="_koK5YsaPc1IFmUN-0YD-7" style="endArrow=classic;html=1;rounded=0;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="_koK5YsaPc1IFmUN-0YD-14" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="232.5" y="470" />
+              <mxPoint x="425" y="470" />
+            </Array>
+            <mxPoint x="370" y="460" as="sourcePoint" />
+            <mxPoint x="370" y="720" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-37" edge="1" parent="1" source="_koK5YsaPc1IFmUN-0YD-24" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="_koK5YsaPc1IFmUN-0YD-23" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="565" y="470" />
+            </Array>
+            <mxPoint x="590" y="490" as="sourcePoint" />
+            <mxPoint x="730" y="750" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-38" edge="1" parent="1" source="_koK5YsaPc1IFmUN-0YD-25" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="_koK5YsaPc1IFmUN-0YD-23" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="1120" y="340" as="sourcePoint" />
+            <mxPoint x="1120" y="600" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-39" edge="1" parent="1" source="_koK5YsaPc1IFmUN-0YD-7" style="endArrow=classic;html=1;rounded=0;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="_koK5YsaPc1IFmUN-0YD-17" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="337.5" y="440" />
+              <mxPoint x="450" y="440" />
+              <mxPoint x="450" y="590" />
+              <mxPoint x="690" y="590" />
+              <mxPoint x="847.5" y="590" />
+            </Array>
+            <mxPoint x="580" y="560" as="sourcePoint" />
+            <mxPoint x="720" y="820" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-40" edge="1" parent="1" source="_koK5YsaPc1IFmUN-0YD-23" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="_koK5YsaPc1IFmUN-0YD-15" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="845" y="580" />
+              <mxPoint x="704.5" y="580" />
+              <mxPoint x="704.5" y="700" />
+            </Array>
+            <mxPoint x="850" y="430" as="sourcePoint" />
+            <mxPoint x="850" y="500" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-41" edge="1" parent="1" source="_koK5YsaPc1IFmUN-0YD-27" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" target="_koK5YsaPc1IFmUN-0YD-21" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="1405" y="560" />
+              <mxPoint x="1326.25" y="560" />
+            </Array>
+            <mxPoint x="830" y="540" as="sourcePoint" />
+            <mxPoint x="880" y="490" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-42" edge="1" parent="1" source="_koK5YsaPc1IFmUN-0YD-27" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" target="_koK5YsaPc1IFmUN-0YD-22" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="1405" y="560" />
+              <mxPoint x="1483.75" y="560" />
+            </Array>
+            <mxPoint x="1570" y="470" as="sourcePoint" />
+            <mxPoint x="1430" y="730" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-43" edge="1" parent="1" source="_koK5YsaPc1IFmUN-0YD-26" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" target="_koK5YsaPc1IFmUN-0YD-21" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="1125" y="560" />
+              <mxPoint x="1203.75" y="560" />
+            </Array>
+            <mxPoint x="1410" y="440" as="sourcePoint" />
+            <mxPoint x="1550" y="700" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-47" edge="1" parent="1" source="_koK5YsaPc1IFmUN-0YD-23" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="_koK5YsaPc1IFmUN-0YD-26" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="910" y="400" as="sourcePoint" />
+            <mxPoint x="910" y="470" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-50" edge="1" parent="1" source="_koK5YsaPc1IFmUN-0YD-8" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="_koK5YsaPc1IFmUN-0YD-11" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="144.5" y="990" />
+              <mxPoint x="144.5" y="1000" />
+              <mxPoint x="177" y="1000" />
+            </Array>
+            <mxPoint x="689.5" y="830" as="sourcePoint" />
+            <mxPoint x="143.6" y="1020" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-52" edge="1" parent="1" source="_koK5YsaPc1IFmUN-0YD-14" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="_koK5YsaPc1IFmUN-0YD-12" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="229.5" y="1020" as="sourcePoint" />
+            <mxPoint x="279.5" y="970" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-53" edge="1" parent="1" source="_koK5YsaPc1IFmUN-0YD-15" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="_koK5YsaPc1IFmUN-0YD-13" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="704.5" y="1000" />
+              <mxPoint x="677" y="1000" />
+            </Array>
+            <mxPoint x="479.5" y="1000" as="sourcePoint" />
+            <mxPoint x="529.5" y="950" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-54" edge="1" parent="1" source="_koK5YsaPc1IFmUN-0YD-17" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.75;exitY=1;exitDx=0;exitDy=0;" target="_koK5YsaPc1IFmUN-0YD-21" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="908.75" y="800" />
+              <mxPoint x="1060" y="800" />
+              <mxPoint x="1265" y="800" />
+            </Array>
+            <mxPoint x="850" y="820" as="sourcePoint" />
+            <mxPoint x="940" y="630" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-57" edge="1" parent="1" source="_koK5YsaPc1IFmUN-0YD-17" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.75;exitY=1;exitDx=0;exitDy=0;" target="_koK5YsaPc1IFmUN-0YD-22" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="908.75" y="820" />
+              <mxPoint x="1404" y="820" />
+              <mxPoint x="1545" y="820" />
+            </Array>
+            <mxPoint x="1130" y="790" as="sourcePoint" />
+            <mxPoint x="1609" y="870" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-59" edge="1" parent="1" source="_koK5YsaPc1IFmUN-0YD-17" style="endArrow=classic;html=1;rounded=0;exitX=0.25;exitY=1;exitDx=0;exitDy=0;" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="786.25" y="810" />
+              <mxPoint x="740" y="810" />
+            </Array>
+            <mxPoint x="690" y="900" as="sourcePoint" />
+            <mxPoint x="740" y="850" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-60" edge="1" parent="1" source="_koK5YsaPc1IFmUN-0YD-17" style="endArrow=classic;html=1;rounded=0;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" target="_koK5YsaPc1IFmUN-0YD-14" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="786.25" y="830" />
+              <mxPoint x="485.75" y="830" />
+            </Array>
+            <mxPoint x="826" y="820" as="sourcePoint" />
+            <mxPoint x="780" y="900" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-61" edge="1" parent="1" source="_koK5YsaPc1IFmUN-0YD-21" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="_koK5YsaPc1IFmUN-0YD-20" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="970" y="980" as="sourcePoint" />
+            <mxPoint x="1020" y="930" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_koK5YsaPc1IFmUN-0YD-62" edge="1" parent="1" source="_koK5YsaPc1IFmUN-0YD-22" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="_koK5YsaPc1IFmUN-0YD-20" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <Array as="points">
+              <mxPoint x="1545" y="1000" />
+              <mxPoint x="1265" y="1000" />
+            </Array>
+            <mxPoint x="1400" y="980" as="sourcePoint" />
+            <mxPoint x="1450" y="930" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
