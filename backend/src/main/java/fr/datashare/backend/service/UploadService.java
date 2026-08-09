@@ -5,7 +5,6 @@ import fr.datashare.backend.entity.DownloadLink;
 import fr.datashare.backend.entity.StoredFile;
 import fr.datashare.backend.entity.User;
 import fr.datashare.backend.exception.FileUploadException;
-import fr.datashare.backend.repository.DownloadLinkRepository;
 import fr.datashare.backend.repository.StoredFileRepository;
 import fr.datashare.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -15,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.Set;
-import java.util.UUID;
 
 @Service
 public class UploadService {
@@ -35,18 +33,18 @@ public class UploadService {
     private final UserRepository userRepository;
     private final StorageService storageService;
     private final StoredFileRepository storedFileRepository;
-    private final DownloadLinkRepository downloadLinkRepository;
+    private final DownloadLinkService downloadLinkService;
 
     public UploadService(
             UserRepository userRepository,
             StorageService storageService,
             StoredFileRepository storedFileRepository,
-            DownloadLinkRepository downloadLinkRepository
+            DownloadLinkService downloadLinkService
     ) {
         this.userRepository = userRepository;
         this.storageService = storageService;
         this.storedFileRepository = storedFileRepository;
-        this.downloadLinkRepository = downloadLinkRepository;
+        this.downloadLinkService = downloadLinkService;
     }
 
     @Transactional
@@ -83,13 +81,8 @@ public class UploadService {
             StoredFile savedFile =
                     storedFileRepository.save(storedFile);
 
-            DownloadLink downloadLink = new DownloadLink();
-            downloadLink.setToken(generateUniqueToken());
-            downloadLink.setExpiresAt(expiresAt);
-            downloadLink.setStoredFile(savedFile);
-
             DownloadLink savedLink =
-                    downloadLinkRepository.save(downloadLink);
+                    downloadLinkService.createLink(savedFile, expiresAt);
 
             return new FileUploadResponse(
                     savedFile.getId(),
@@ -140,16 +133,6 @@ public class UploadService {
                     "La durée d'expiration doit être comprise entre 1 et 7 jours."
             );
         }
-    }
-
-    private String generateUniqueToken() {
-        String token;
-
-        do {
-            token = UUID.randomUUID().toString();
-        } while (downloadLinkRepository.existsByToken(token));
-
-        return token;
     }
 
     private String resolveOriginalName(MultipartFile file) {
