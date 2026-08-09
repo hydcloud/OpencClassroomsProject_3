@@ -5,7 +5,7 @@ import fr.datashare.backend.dto.file.FileUploadResponse;
 import fr.datashare.backend.security.CustomUserDetailsService;
 import fr.datashare.backend.security.JwtAuthenticationFilter;
 import fr.datashare.backend.security.JwtService;
-import fr.datashare.backend.service.FileService;
+import fr.datashare.backend.service.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -34,7 +34,16 @@ class FileControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private FileService fileService;
+    private UploadService uploadService;
+
+    @MockitoBean
+    private FileHistoryService fileHistoryService;
+
+    @MockitoBean
+    private FileDeletionService fileDeletionService;
+
+    @MockitoBean
+    private DownloadService downloadService;
 
     @MockitoBean
     private JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -66,7 +75,7 @@ class FileControllerTest {
                 "/api/downloads/download-token"
         );
 
-        when(fileService.upload(
+        when(uploadService.upload(
                 any(),
                 eq(3),
                 eq("stephane@example.com")
@@ -91,7 +100,7 @@ class FileControllerTest {
                 .andExpect(jsonPath("$.downloadToken")
                         .value("download-token"));
 
-        verify(fileService).upload(
+        verify(uploadService).upload(
                 any(),
                 eq(3),
                 eq("stephane@example.com")
@@ -111,7 +120,7 @@ class FileControllerTest {
                 "download-token"
         );
 
-        when(fileService.getHistory("stephane@example.com"))
+        when(fileHistoryService.getHistory("stephane@example.com"))
                 .thenReturn(List.of(fileResponse));
 
         UsernamePasswordAuthenticationToken authentication =
@@ -132,7 +141,7 @@ class FileControllerTest {
                 .andExpect(jsonPath("$[0].downloadToken")
                         .value("download-token"));
 
-        verify(fileService)
+        verify(fileHistoryService)
                 .getHistory("stephane@example.com");
     }
 
@@ -152,7 +161,7 @@ class FileControllerTest {
                 )
                 .andExpect(status().isNoContent());
 
-        verify(fileService)
+        verify(fileDeletionService)
                 .deleteFile(1L, "stephane@example.com");
     }
 }

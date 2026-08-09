@@ -2,7 +2,6 @@ package fr.datashare.backend.service;
 
 import fr.datashare.backend.entity.StoredFile;
 import fr.datashare.backend.repository.StoredFileRepository;
-import fr.datashare.backend.storage.StorageService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

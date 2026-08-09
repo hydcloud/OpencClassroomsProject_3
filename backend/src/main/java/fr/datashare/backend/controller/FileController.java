@@ -1,8 +1,11 @@
 package fr.datashare.backend.controller;
 
 import fr.datashare.backend.dto.file.FileUploadResponse;
-import fr.datashare.backend.service.FileService;
+import fr.datashare.backend.service.FileDeletionService;
+import fr.datashare.backend.service.FileHistoryService;
+import fr.datashare.backend.service.DownloadService;
 import fr.datashare.backend.dto.file.FileHistoryResponse;
+import fr.datashare.backend.service.UploadService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -21,10 +24,20 @@ import java.util.List;
 @RequestMapping("/api/files")
 public class FileController {
 
-    private final FileService fileService;
+    private final UploadService uploadService;
+    private final FileHistoryService fileHistoryService;
+    private final FileDeletionService fileDeletionService;
+    private final DownloadService downloadService;
 
-    public FileController(FileService fileService) {
-        this.fileService = fileService;
+    public FileController(UploadService uploadService,
+                          FileHistoryService fileHistoryService,
+                          FileDeletionService fileDeletionService,
+                          DownloadService downloadService)
+    {
+        this.uploadService = uploadService;
+        this.fileHistoryService = fileHistoryService;
+        this.fileDeletionService = fileDeletionService;
+        this.downloadService = downloadService;
     }
 
     @PostMapping
@@ -36,7 +49,7 @@ public class FileController {
             ) int expirationDays,
             Authentication authentication
     ) {
-        FileUploadResponse response = fileService.upload(
+        FileUploadResponse response = uploadService.upload(
                 file,
                 expirationDays,
                 authentication.getName()
@@ -51,9 +64,52 @@ public class FileController {
     public List<FileHistoryResponse> history(
             Authentication authentication
     ) {
-        return fileService.getHistory(
+        return fileHistoryService.getHistory(
                 authentication.getName()
         );
+    }
+
+    @GetMapping("/{token}")
+    public ResponseEntity<DownloadMetadataResponse> getMetadata(
+            @PathVariable String token
+    ) {
+        return ResponseEntity.ok(
+                downloadService.getDownloadMetadata(token)
+        );
+    }
+
+    @GetMapping("/{token}/file")
+    public ResponseEntity<Resource> download(
+            @PathVariable String token
+    ) {
+        DownloadService.DownloadResource download =
+                downloadService.loadDownloadFile(token);
+
+        MediaType mediaType;
+
+        try {
+            mediaType = MediaType.parseMediaType(
+                    download.mimeType()
+            );
+        } catch (IllegalArgumentException exception) {
+            mediaType = MediaType.APPLICATION_OCTET_STREAM;
+        }
+
+        ContentDisposition contentDisposition =
+                ContentDisposition.attachment()
+                        .filename(
+                                download.originalName(),
+                                StandardCharsets.UTF_8
+                        )
+                        .build();
+
+        return ResponseEntity.ok()
+                .contentType(mediaType)
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        contentDisposition.toString()
+                )
+                .body(download.resource());
     }
 
     @DeleteMapping("/{id}")
@@ -61,55 +117,11 @@ public class FileController {
             @PathVariable Long id,
             Authentication authentication
     ) {
-        fileService.deleteFile(
+        fileDeletionService.deleteFile(
                 id,
                 authentication.getName()
         );
 
         return ResponseEntity.noContent().build();
     }
-
-        @GetMapping("/{token}")
-        public ResponseEntity<DownloadMetadataResponse> getMetadata(
-                @PathVariable String token
-        ) {
-            return ResponseEntity.ok(
-                    fileService.getDownloadMetadata(token)
-            );
-        }
-
-        @GetMapping("/{token}/file")
-        public ResponseEntity<Resource> download(
-                @PathVariable String token
-        ) {
-            FileService.DownloadResource download =
-                    fileService.loadDownloadFile(token);
-
-            MediaType mediaType;
-
-            try {
-                mediaType = MediaType.parseMediaType(
-                        download.mimeType()
-                );
-            } catch (IllegalArgumentException exception) {
-                mediaType = MediaType.APPLICATION_OCTET_STREAM;
-            }
-
-            ContentDisposition contentDisposition =
-                    ContentDisposition.attachment()
-                            .filename(
-                                    download.originalName(),
-                                    StandardCharsets.UTF_8
-                            )
-                            .build();
-
-            return ResponseEntity.ok()
-                    .contentType(mediaType)
-                    .header(
-                            HttpHeaders.CONTENT_DISPOSITION,
-                            contentDisposition.toString()
-                    )
-                    .body(download.resource());
-        }
-
 }

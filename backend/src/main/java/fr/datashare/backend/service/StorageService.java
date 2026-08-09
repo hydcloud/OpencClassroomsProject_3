@@ -1,4 +1,4 @@
-package fr.datashare.backend.storage;
+package fr.datashare.backend.service;
 
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
