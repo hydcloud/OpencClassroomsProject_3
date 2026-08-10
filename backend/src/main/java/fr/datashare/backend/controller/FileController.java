@@ -69,15 +69,6 @@ public class FileController {
         );
     }
 
-    @GetMapping("/{token}")
-    public ResponseEntity<DownloadMetadataResponse> getMetadata(
-            @PathVariable String token
-    ) {
-        return ResponseEntity.ok(
-                downloadService.getDownloadMetadata(token)
-        );
-    }
-
     @GetMapping("/{token}/file")
     public ResponseEntity<Resource> download(
             @PathVariable String token

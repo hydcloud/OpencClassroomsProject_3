@@ -15,19 +15,20 @@ import java.time.LocalDateTime;
 @Service
 public class DownloadService {
 
-    private final DownloadLinkRepository downloadLinkRepository;
+    private final DownloadLinkService downloadLinkService;
     private final StorageService storageService;
 
     public DownloadService(
-            DownloadLinkRepository downloadLinkRepository,
-            StorageService storageService) {
-        this.downloadLinkRepository = downloadLinkRepository;
+            DownloadLinkService downloadLinkService,
+            StorageService storageService
+    ) {
+        this.downloadLinkService = downloadLinkService;
         this.storageService = storageService;
     }
 
     @Transactional(readOnly = true)
     public DownloadMetadataResponse getDownloadMetadata(String token) {
-        DownloadLink downloadLink = findValidDownloadLink(token);
+        DownloadLink downloadLink = downloadLinkService.findValidLink(token);
         StoredFile storedFile = downloadLink.getStoredFile();
 
         return new DownloadMetadataResponse(
@@ -40,7 +41,7 @@ public class DownloadService {
 
     @Transactional(readOnly = true)
     public DownloadResource loadDownloadFile(String token) {
-        DownloadLink downloadLink = findValidDownloadLink(token);
+        DownloadLink downloadLink = downloadLinkService.findValidLink(token);
         StoredFile storedFile = downloadLink.getStoredFile();
 
         Resource resource = storageService.load(
@@ -52,19 +53,6 @@ public class DownloadService {
                 storedFile.getOriginalName(),
                 storedFile.getMimeType()
         );
-    }
-
-    private DownloadLink findValidDownloadLink(String token) {
-
-        DownloadLink downloadLink = downloadLinkRepository
-                .findByToken(token)
-                .orElseThrow(DownloadLinkNotFoundException::new);
-
-        if (downloadLink.getExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new DownloadLinkExpiredException();
-        }
-
-        return downloadLink;
     }
 
     public record DownloadResource(

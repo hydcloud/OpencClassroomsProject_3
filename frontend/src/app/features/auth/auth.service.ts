@@ -11,7 +11,7 @@ import { LoginResponse } from '../../models/login-response';
 })
 export class AuthService {
 
-  private readonly apiUrl = `${environment.apiUrl}/auth`;
+  private readonly apiUrl = environment.apiUrl;
   private readonly tokenKey = 'datashare_token';
 
   constructor(private http: HttpClient) {}

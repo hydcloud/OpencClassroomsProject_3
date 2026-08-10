@@ -30,28 +30,6 @@ public class AuthService {
         this.jwtService = jwtService;
     }
 
-    @Transactional
-    public UserResponse register(RegisterRequest request) {
-
-        String normalizedEmail = request.email().trim().toLowerCase();
-
-        if (userRepository.existsByEmail(normalizedEmail)) {
-            throw new EmailAlreadyExistsException(normalizedEmail);
-        }
-
-        User user = new User();
-        user.setEmail(normalizedEmail);
-        user.setPassword(passwordEncoder.encode(request.password()));
-
-        User savedUser = userRepository.save(user);
-
-        return new UserResponse(
-                savedUser.getId(),
-                savedUser.getEmail(),
-                savedUser.getCreatedAt()
-        );
-    }
-
     public LoginResponse login(LoginRequest request) {
 
         String normalizedEmail = request.email()

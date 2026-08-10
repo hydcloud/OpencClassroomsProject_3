@@ -2,6 +2,8 @@ package fr.datashare.backend.service;
 
 import fr.datashare.backend.entity.DownloadLink;
 import fr.datashare.backend.entity.StoredFile;
+import fr.datashare.backend.exception.DownloadLinkExpiredException;
+import fr.datashare.backend.exception.DownloadLinkNotFoundException;
 import fr.datashare.backend.repository.DownloadLinkRepository;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +41,19 @@ public class DownloadLinkService {
         } while (downloadLinkRepository.existsByToken(token));
 
         return token;
+    }
+
+    public DownloadLink findValidLink(String token) {
+
+        DownloadLink downloadLink = downloadLinkRepository
+                .findByToken(token)
+                .orElseThrow(DownloadLinkNotFoundException::new);
+
+        if (downloadLink.getExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new DownloadLinkExpiredException();
+        }
+
+        return downloadLink;
     }
 }
 

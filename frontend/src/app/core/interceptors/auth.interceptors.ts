@@ -20,8 +20,8 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
   const token = authService.getToken();
 
   const isPublicRequest =
-    request.url.includes('/api/auth/login') ||
-    request.url.includes('/api/auth/register');
+    request.url.includes('/api/login') ||
+    request.url.includes('/api/user');
 
   if (!token || isPublicRequest) {
     return next(request);

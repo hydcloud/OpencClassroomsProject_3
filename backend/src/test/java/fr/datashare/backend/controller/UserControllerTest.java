@@ -5,6 +5,7 @@ import fr.datashare.backend.dto.auth.LoginResponse;
 import fr.datashare.backend.dto.auth.RegisterRequest;
 import fr.datashare.backend.dto.auth.UserResponse;
 import fr.datashare.backend.service.AuthService;
+import fr.datashare.backend.service.UserRegistrationService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -24,9 +25,9 @@ import fr.datashare.backend.security.CustomUserDetailsService;
 
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 
-@WebMvcTest(AuthController.class)
+@WebMvcTest(UserController.class)
 @AutoConfigureMockMvc(addFilters = false)
-class AuthControllerTest {
+class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -42,6 +43,8 @@ class AuthControllerTest {
 
     @MockitoBean
     private CustomUserDetailsService customUserDetailsService;
+    @Autowired
+    private UserRegistrationService userRegistrationService;
 
     @Test
     void register_should_return_201_created() throws Exception {
@@ -57,7 +60,7 @@ class AuthControllerTest {
                 LocalDateTime.now()
         );
 
-        when(authService.register(request))
+        when(userRegistrationService.register(request))
                 .thenReturn(response);
 
         mockMvc.perform(

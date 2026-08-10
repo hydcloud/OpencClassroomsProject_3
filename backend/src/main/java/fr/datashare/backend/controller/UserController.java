@@ -5,26 +5,33 @@ import fr.datashare.backend.dto.auth.UserResponse;
 import fr.datashare.backend.service.AuthService;
 import fr.datashare.backend.dto.auth.LoginRequest;
 import fr.datashare.backend.dto.auth.LoginResponse;
+import fr.datashare.backend.service.UserRegistrationService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth")
-public class AuthController {
+@RequestMapping("/api")
+public class UserController {
 
+    private final UserRegistrationService userRegistrationService;
     private final AuthService authService;
 
-    public AuthController(AuthService authService) {
+    public UserController(
+            UserRegistrationService userRegistrationService,
+            AuthService authService
+    ) {
+        this.userRegistrationService = userRegistrationService;
         this.authService = authService;
     }
 
-    @PostMapping("/register")
+    @PostMapping("/user")
     public ResponseEntity<UserResponse> register(
             @Valid @RequestBody RegisterRequest request
     ) {
-        UserResponse response = authService.register(request);
+        UserResponse response =
+                userRegistrationService.register(request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -35,7 +42,8 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(
             @Valid @RequestBody LoginRequest request
     ) {
-        LoginResponse response = authService.login(request);
+        LoginResponse response =
+                authService.login(request);
 
         return ResponseEntity.ok(response);
     }
