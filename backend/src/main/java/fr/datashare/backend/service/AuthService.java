@@ -1,17 +1,13 @@
 package fr.datashare.backend.service;
 
-import fr.datashare.backend.dto.auth.RegisterRequest;
-import fr.datashare.backend.dto.auth.UserResponse;
-import fr.datashare.backend.entity.User;
-import fr.datashare.backend.exception.EmailAlreadyExistsException;
-import fr.datashare.backend.repository.UserRepository;
 import fr.datashare.backend.dto.auth.LoginRequest;
 import fr.datashare.backend.dto.auth.LoginResponse;
+import fr.datashare.backend.entity.User;
 import fr.datashare.backend.exception.InvalidCredentialsException;
+import fr.datashare.backend.repository.UserRepository;
 import fr.datashare.backend.security.JwtService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthService {

@@ -1,16 +1,10 @@
 package fr.datashare.backend.service;
 
-import fr.datashare.backend.dto.download.DownloadMetadataResponse;
 import fr.datashare.backend.entity.DownloadLink;
 import fr.datashare.backend.entity.StoredFile;
-import fr.datashare.backend.exception.DownloadLinkExpiredException;
-import fr.datashare.backend.exception.DownloadLinkNotFoundException;
-import fr.datashare.backend.repository.DownloadLinkRepository;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 @Service
 public class DownloadService {
@@ -24,19 +18,6 @@ public class DownloadService {
     ) {
         this.downloadLinkService = downloadLinkService;
         this.storageService = storageService;
-    }
-
-    @Transactional(readOnly = true)
-    public DownloadMetadataResponse getDownloadMetadata(String token) {
-        DownloadLink downloadLink = downloadLinkService.findValidLink(token);
-        StoredFile storedFile = downloadLink.getStoredFile();
-
-        return new DownloadMetadataResponse(
-                storedFile.getOriginalName(),
-                storedFile.getMimeType(),
-                storedFile.getSize(),
-                downloadLink.getExpiresAt()
-        );
     }
 
     @Transactional(readOnly = true)

@@ -43,7 +43,8 @@ class UserControllerTest {
 
     @MockitoBean
     private CustomUserDetailsService customUserDetailsService;
-    @Autowired
+
+    @MockitoBean
     private UserRegistrationService userRegistrationService;
 
     @Test
@@ -64,7 +65,7 @@ class UserControllerTest {
                 .thenReturn(response);
 
         mockMvc.perform(
-                        post("/api/auth/register")
+                        post("/api/user")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("""
                                     {
@@ -92,7 +93,7 @@ class UserControllerTest {
                 .thenReturn(response);
 
         mockMvc.perform(
-                        post("/api/auth/login")
+                        post("/api/login")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("""
                                     {
@@ -110,7 +111,7 @@ class UserControllerTest {
     void register_should_return_400_when_request_is_invalid() throws Exception {
 
         mockMvc.perform(
-                        post("/api/auth/register")
+                        post("/api/user")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("""
                                     {
