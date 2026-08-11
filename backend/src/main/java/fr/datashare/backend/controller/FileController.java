@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import fr.datashare.backend.dto.download.DownloadMetadataResponse;
+import fr.datashare.backend.dto.file.DownloadFileRequest;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
@@ -47,12 +47,17 @@ public class FileController {
                     name = "expirationDays",
                     defaultValue = "7"
             ) int expirationDays,
+            @RequestParam(
+                    name = "password",
+                    required = false
+            ) String password,
             Authentication authentication
     ) {
         FileUploadResponse response = uploadService.upload(
                 file,
                 expirationDays,
-                authentication.getName()
+                authentication.getName(),
+                password
         );
 
         return ResponseEntity
@@ -66,12 +71,17 @@ public class FileController {
             @RequestParam(
                     name = "expirationDays",
                     defaultValue = "7"
-            ) int expirationDays
+            ) int expirationDays,
+            @RequestParam(
+                    name = "password",
+                    required = false
+            ) String password
     ) {
         FileUploadResponse response =
                 uploadService.uploadAnonymous(
                         file,
-                        expirationDays
+                        expirationDays,
+                        password
                 );
 
         return ResponseEntity
@@ -88,12 +98,19 @@ public class FileController {
         );
     }
 
-    @GetMapping("/{token}/file")
+    @PostMapping("/{token}/file")
     public ResponseEntity<Resource> download(
-            @PathVariable String token
+            @PathVariable String token,
+            @RequestBody(required = false) DownloadFileRequest request
     ) {
+        String password =
+                request == null ? null : request.password();
+
         DownloadService.DownloadResource download =
-                downloadService.loadDownloadFile(token);
+                downloadService.loadDownloadFile(
+                        token,
+                        password
+                );
 
         MediaType mediaType;
 

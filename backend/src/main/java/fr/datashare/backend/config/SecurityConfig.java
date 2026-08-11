@@ -53,12 +53,12 @@ public class SecurityConfig {
                                 HttpMethod.POST,
                                 "/api/user",
                                 "/api/login",
-                                "/api/files/anonymous"
+                                "/api/files/anonymous",
+                                "/api/files/*/file"
                         ).permitAll()
                         .requestMatchers(
                                 HttpMethod.GET,
-                                "/api/health",
-                                "/api/files/*/file"
+                                "/api/health"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

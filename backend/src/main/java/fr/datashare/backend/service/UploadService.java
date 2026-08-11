@@ -10,6 +10,7 @@ import fr.datashare.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.Locale;
@@ -34,24 +35,28 @@ public class UploadService {
     private final StorageService storageService;
     private final StoredFileRepository storedFileRepository;
     private final DownloadLinkService downloadLinkService;
+    private final PasswordEncoder passwordEncoder;
 
     public UploadService(
             UserRepository userRepository,
             StorageService storageService,
             StoredFileRepository storedFileRepository,
-            DownloadLinkService downloadLinkService
+            DownloadLinkService downloadLinkService,
+            PasswordEncoder passwordEncoder
     ) {
         this.userRepository = userRepository;
         this.storageService = storageService;
         this.storedFileRepository = storedFileRepository;
         this.downloadLinkService = downloadLinkService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
     public FileUploadResponse upload(
             MultipartFile file,
             int expirationDays,
-            String authenticatedEmail
+            String authenticatedEmail,
+            String password
     ) {
         User owner = userRepository
                 .findByEmail(authenticatedEmail)
@@ -64,29 +69,35 @@ public class UploadService {
         return processUpload(
                 file,
                 expirationDays,
-                owner
+                owner,
+                password
         );
     }
 
     @Transactional
     public FileUploadResponse uploadAnonymous(
             MultipartFile file,
-            int expirationDays
+            int expirationDays,
+            String password
     ) {
         return processUpload(
                 file,
                 expirationDays,
-                null
+                null,
+                password
         );
     }
 
     private FileUploadResponse processUpload(
             MultipartFile file,
             int expirationDays,
-            User owner
+            User owner,
+            String password
     ) {
         validateFile(file);
         validateExpiration(expirationDays);
+
+        String passwordHash = resolvePasswordHash(password);
 
         LocalDateTime expiresAt =
                 LocalDateTime.now().plusDays(expirationDays);
@@ -103,6 +114,7 @@ public class UploadService {
             storedFile.setSize(file.getSize());
             storedFile.setExpiresAt(expiresAt);
             storedFile.setOwner(owner);
+            storedFile.setPasswordHash(passwordHash);
 
             StoredFile savedFile =
                     storedFileRepository.save(storedFile);
@@ -121,7 +133,8 @@ public class UploadService {
                     savedFile.getUploadedAt(),
                     savedFile.getExpiresAt(),
                     savedLink.getToken(),
-                    "/api/files/" + savedLink.getToken() + "/file"
+                    "/api/files/" + savedLink.getToken() + "/file",
+                    savedFile.getPasswordHash() != null
             );
 
         } catch (RuntimeException exception) {
@@ -190,5 +203,19 @@ public class UploadService {
         return filename
                 .substring(filename.lastIndexOf('.') + 1)
                 .toLowerCase(Locale.ROOT);
+    }
+
+    private String resolvePasswordHash(String password) {
+        if (password == null || password.isBlank()) {
+            return null;
+        }
+
+        if (password.length() < 6) {
+            throw new FileUploadException(
+                    "Le mot de passe doit contenir au moins 6 caractères."
+            );
+        }
+
+        return passwordEncoder.encode(password);
     }
 }

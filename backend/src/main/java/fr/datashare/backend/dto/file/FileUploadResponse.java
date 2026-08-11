@@ -10,6 +10,7 @@ public record FileUploadResponse(
         LocalDateTime uploadedAt,
         LocalDateTime expiresAt,
         String downloadToken,
-        String downloadUrl
+        String downloadUrl,
+        boolean passwordProtected
 ) {
 }

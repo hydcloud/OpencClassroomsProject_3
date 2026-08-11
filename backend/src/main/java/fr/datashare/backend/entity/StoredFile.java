@@ -30,6 +30,9 @@ public class StoredFile {
     @Column(name = "expires_at", nullable = false)
     private LocalDateTime expiresAt;
 
+    @Column(name = "password_hash")
+    private String passwordHash;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(
             name = "user_id",
@@ -114,4 +117,8 @@ public class StoredFile {
     public void setDownloadLink(DownloadLink downloadLink) {
         this.downloadLink = downloadLink;
     }
+
+    public String getPasswordHash() { return passwordHash; }
+
+    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
 }

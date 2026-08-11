@@ -48,7 +48,8 @@ public class FileHistoryService {
                         file.getSize(),
                         file.getUploadedAt(),
                         file.getExpiresAt(),
-                        file.getDownloadLink().getToken()
+                        file.getDownloadLink().getToken(),
+                        file.getPasswordHash() != null
                 ))
                 .toList();
     }

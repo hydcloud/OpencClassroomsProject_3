@@ -72,13 +72,15 @@ class FileControllerTest {
                 LocalDateTime.of(2026, 7, 29, 10, 0),
                 LocalDateTime.of(2026, 8, 1, 10, 0),
                 "download-token",
-                "/api/downloads/download-token"
+                "/api/downloads/download-token",
+                false
         );
 
         when(uploadService.upload(
                 any(),
                 eq(3),
-                eq("stephane@example.com")
+                eq("stephane@example.com"),
+                isNull()
         )).thenReturn(response);
 
         UsernamePasswordAuthenticationToken authentication =
@@ -103,7 +105,8 @@ class FileControllerTest {
         verify(uploadService).upload(
                 any(),
                 eq(3),
-                eq("stephane@example.com")
+                eq("stephane@example.com"),
+                isNull()
         );
     }
 
@@ -117,7 +120,8 @@ class FileControllerTest {
                 1234L,
                 LocalDateTime.of(2026, 7, 29, 10, 0),
                 LocalDateTime.of(2026, 8, 1, 10, 0),
-                "download-token"
+                "download-token",
+                false
         );
 
         when(fileHistoryService.getHistory("stephane@example.com"))

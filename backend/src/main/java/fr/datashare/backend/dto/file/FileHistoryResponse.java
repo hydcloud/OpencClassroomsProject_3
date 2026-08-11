@@ -10,7 +10,8 @@ public record FileHistoryResponse(
         long size,
         LocalDateTime uploadedAt,
         LocalDateTime expiresAt,
-        String downloadToken
+        String downloadToken,
+        boolean passwordProtected
 
 ) {
 }

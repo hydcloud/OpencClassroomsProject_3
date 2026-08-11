@@ -10,8 +10,6 @@ import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import fr.datashare.backend.exception.FileNotFoundException;
-
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -138,5 +136,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(response);
+    }
+
+    @ExceptionHandler(InvalidFilePasswordException.class)
+    public ResponseEntity<String> handleInvalidFilePassword(
+            InvalidFilePasswordException exception
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(exception.getMessage());
     }
 }
