@@ -105,6 +105,19 @@
                         </select>
                     </div>
 
+                    <div class="form-group">
+                        <label for="password">
+                            Mot de passe de protection
+                        </label>
+
+                        <input id="password" type="password" name="password" [(ngModel)]="password" minlength="6"
+                            autocomplete="new-password" />
+
+                        <small>
+                            Facultatif — 6 caractères minimum.
+                        </small>
+                    </div>
+
                     <button class="upload-button" type="submit" [disabled]="isUploading || !selectedFile">
                         {{ isUploading ? 'Envoi en cours...' : 'Transférer' }}
                     </button>
@@ -119,13 +132,29 @@
 
                 @if (anonymousDownloadUrl) {
                 <div class="anonymous-link">
+
                     <p>Votre lien de téléchargement :</p>
 
                     <span>{{ anonymousDownloadUrl }}</span>
 
+                    @if (anonymousPasswordProtected) {
+
+                    <input type="password" [(ngModel)]="downloadPassword" name="anonymousDownloadPassword" minlength="6"
+                        placeholder="Mot de passe" />
+
+                    <button type="button" class="download-button" [disabled]="downloadPassword.length < 6"
+                        (click)="onProtectedDownload()">
+                        Télécharger le fichier
+                    </button>
+
+                    } @else {
+
                     <button type="button" (click)="onAnonymousDownload()">
                         Télécharger le fichier
                     </button>
+
+                    }
+
                 </div>
                 }
 
@@ -253,12 +282,23 @@
 
                         </div>
 
-
                         <div class="file-actions">
 
                             <button type="button" class="download-button" (click)="onDownload(file)">
                                 Télécharger
                             </button>
+
+                            @if (
+                            file.passwordProtected &&
+                            protectedFileToken === file.downloadToken
+                            ) {
+                            <input type="password" [(ngModel)]="downloadPassword" name="anonymousDownloadPassword"
+                                minlength="6" placeholder="Mot de passe" />
+
+                            <button type="button" class="download-button" (click)="onProtectedDownload()">
+                                Valider
+                            </button>
+                            }
 
                             <button type="button" class="delete-button" (click)="onDelete(file.id)">
                                 Supprimer

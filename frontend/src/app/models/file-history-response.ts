@@ -6,4 +6,5 @@ export interface FileHistoryResponse {
   uploadedAt: string;
   expiresAt: string;
   downloadToken: string;
+  passwordProtected: boolean;
 }

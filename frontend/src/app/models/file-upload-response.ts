@@ -7,4 +7,5 @@ export interface FileUploadResponse {
   expiresAt: string;
   downloadToken: string;
   downloadUrl: string;
+  passwordProtected: boolean;
 }

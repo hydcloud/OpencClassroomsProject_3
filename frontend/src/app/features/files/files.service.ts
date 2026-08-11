@@ -20,30 +20,35 @@ export class FilesService {
 
   upload(
     file: File,
-    expirationDays: number
+    expirationDays: number,
+    password?: string
   ): Observable<FileUploadResponse> {
     return this.sendFile(
       this.apiUrl,
       file,
-      expirationDays
+      expirationDays,
+      password
     );
   }
 
   uploadAnonymous(
     file: File,
-    expirationDays: number
+    expirationDays: number,
+    password?: string
   ): Observable<FileUploadResponse> {
     return this.sendFile(
       `${this.apiUrl}/anonymous`,
       file,
-      expirationDays
+      expirationDays,
+      password
     );
   }
 
   private sendFile(
     url: string,
     file: File,
-    expirationDays: number
+    expirationDays: number,
+    password?: string
   ): Observable<FileUploadResponse> {
     const formData = new FormData();
 
@@ -52,6 +57,10 @@ export class FilesService {
       'expirationDays',
       expirationDays.toString()
     );
+
+    if (password && password.trim().length > 0) {
+      formData.append('password', password);
+    }
 
     return this.http.post<FileUploadResponse>(
       url,
@@ -69,11 +78,14 @@ export class FilesService {
   }
 
   downloadFile(
-    token: string
-  ):
-    Observable<Blob> {
-    return this.http.get(
+    token: string,
+    password?: string
+  ): Observable<Blob> {
+    return this.http.post(
       `${this.apiUrl}/${token}/file`,
+      {
+        password: password ?? null
+      },
       {
         responseType: 'blob'
       }

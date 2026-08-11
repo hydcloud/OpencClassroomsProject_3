@@ -28,6 +28,11 @@ export class Files implements OnInit {
   isUploading = false;
   anonymousDownloadUrl = '';
   anonymousDownloadToken = '';
+  password = '';
+  downloadPassword = '';
+  protectedFileToken: string | null = null;
+  protectedFileName = '';
+  anonymousPasswordProtected = false;
   deletingFileId: number | null = null;
 
   constructor(
@@ -94,11 +99,13 @@ export class Files implements OnInit {
     const uploadRequest = this.authService.isAuthenticated()
       ? this.filesService.upload(
         this.selectedFile,
-        this.expirationDays
+        this.expirationDays,
+        this.password
       )
       : this.filesService.uploadAnonymous(
         this.selectedFile,
-        this.expirationDays
+        this.expirationDays,
+        this.password
       );
 
     uploadRequest.subscribe({
@@ -106,16 +113,25 @@ export class Files implements OnInit {
         this.isUploading = false;
         this.successMessage = 'Fichier envoyé avec succès.';
         this.selectedFile = null;
-
-        this.anonymousDownloadUrl =
-          `${environment.apiUrl.replace('/api', '')}${response.downloadUrl}`;
-
-        this.anonymousDownloadToken = response.downloadToken;
+        this.password = '';
 
         if (this.authService.isAuthenticated()) {
           this.loadFiles();
         } else {
-          this.anonymousDownloadUrl = response.downloadUrl;
+          this.anonymousDownloadUrl =
+            `${environment.apiUrl.replace('/api', '')}${response.downloadUrl}`;
+
+          this.anonymousDownloadToken =
+            response.downloadToken;
+
+          this.anonymousPasswordProtected =
+            response.passwordProtected;
+
+          this.protectedFileToken =
+            response.downloadToken;
+
+          this.protectedFileName =
+            response.originalName;
         }
 
         this.changeDetectorRef.markForCheck();
@@ -207,17 +223,43 @@ export class Files implements OnInit {
   }
 
   onDownload(file: FileHistoryResponse): void {
+
+    if (file.passwordProtected) {
+      this.protectedFileToken = file.downloadToken;
+      this.protectedFileName = file.originalName;
+      return;
+    }
+
+    this.downloadFile(
+      file.downloadToken,
+      file.originalName
+    );
+  }
+
+  private downloadFile(
+    token: string,
+    originalName: string,
+    password?: string
+  ): void {
+
     this.filesService
-      .downloadFile(file.downloadToken)
+      .downloadFile(token, password)
       .subscribe({
         next: blob => {
           const url = URL.createObjectURL(blob);
           const link = document.createElement('a');
+
           link.href = url;
-          link.download = file.originalName;
+          link.download = originalName;
           link.click();
+
           URL.revokeObjectURL(url);
+
+          this.downloadPassword = '';
+          this.protectedFileToken = null;
+          this.protectedFileName = '';
         },
+
         error: error => {
           console.error(
             'Erreur lors du téléchargement :',
@@ -225,14 +267,29 @@ export class Files implements OnInit {
           );
 
           this.errorMessage =
-            'Impossible de télécharger le fichier.';
+            error.status === 401
+              ? 'Mot de passe incorrect.'
+              : 'Impossible de télécharger le fichier.';
         }
       });
   }
 
+  onProtectedDownload(): void {
+
+    if (!this.protectedFileToken) {
+      return;
+    }
+
+    this.downloadFile(
+      this.protectedFileToken,
+      this.protectedFileName,
+      this.downloadPassword
+    );
+  }
+
   onLogout(): void {
     this.authService.logout();
-    this.router.navigate(['/login']);
+    this.router.navigate(['/']);
   }
 
   onAnonymousDownload(): void {
