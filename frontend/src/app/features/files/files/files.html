@@ -12,10 +12,12 @@
             <span>Envoyer</span>
         </button>
 
+        @if (isAuthenticated()) {
         <button type="button" class="nav-item" aria-label="Mes fichiers">
             <span class="nav-icon">▣</span>
             <span>Fichiers</span>
         </button>
+        }
 
     </aside>
 
@@ -27,14 +29,30 @@
         <header class="top-bar">
 
             <div class="account-box">
+
+                @if (isAuthenticated()) {
+
                 <div class="account-info">
                     <strong>Mon compte</strong>
                     <span>DataShare</span>
                 </div>
 
                 <button type="button" class="logout-button" (click)="onLogout()">
-                    Deconnexion
+                    Déconnexion
                 </button>
+
+                } @else {
+
+                <a routerLink="/login" class="login-button">
+                    Se connecter
+                </a>
+
+                <a routerLink="/register" class="register-button">
+                    Créer un compte
+                </a>
+
+                }
+
             </div>
 
         </header>
@@ -87,13 +105,11 @@
                         </select>
                     </div>
 
-
                     <button class="upload-button" type="submit" [disabled]="isUploading || !selectedFile">
                         {{ isUploading ? 'Envoi en cours...' : 'Transférer' }}
                     </button>
 
                 </form>
-
 
                 @if (successMessage) {
                 <p class="success-message">
@@ -101,10 +117,22 @@
                 </p>
                 }
 
+                @if (anonymousDownloadUrl) {
+                <div class="anonymous-link">
+                    <p>Votre lien de téléchargement :</p>
+
+                    <span>{{ anonymousDownloadUrl }}</span>
+
+                    <button type="button" (click)="onAnonymousDownload()">
+                        Télécharger le fichier
+                    </button>
+                </div>
+                }
+
             </section>
 
-
             <!-- Partie centrale -->
+            @if (isAuthenticated()) {
             <section class="files-card">
 
                 <div class="files-header">
@@ -247,6 +275,8 @@
                 }
 
             </section>
+
+            }
 
         </div>
 

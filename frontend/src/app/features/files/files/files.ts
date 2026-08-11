@@ -6,12 +6,14 @@ import { FileHistoryResponse } from '../../../models/file-history-response';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
+
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-files',
-  imports: [FormsModule, DatePipe],
+  imports: [FormsModule, DatePipe, RouterLink],
   templateUrl: './files.html',
   styleUrl: './files.scss',
 })
@@ -24,6 +26,8 @@ export class Files implements OnInit {
   expirationDays = 7;
   successMessage = '';
   isUploading = false;
+  anonymousDownloadUrl = '';
+  anonymousDownloadToken = '';
   deletingFileId: number | null = null;
 
   constructor(
@@ -34,7 +38,13 @@ export class Files implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.loadFiles();
+    if (this.authService.isAuthenticated()) {
+      this.loadFiles();
+    }
+  }
+
+  isAuthenticated(): boolean {
+    return this.authService.isAuthenticated();
   }
 
   loadFiles(): void {
@@ -81,28 +91,47 @@ export class Files implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
 
-    this.filesService
-      .upload(this.selectedFile, this.expirationDays)
-      .subscribe({
-        next: () => {
-          this.isUploading = false;
-          this.successMessage = 'Fichier envoyé avec succès.';
-          this.selectedFile = null;
+    const uploadRequest = this.authService.isAuthenticated()
+      ? this.filesService.upload(
+        this.selectedFile,
+        this.expirationDays
+      )
+      : this.filesService.uploadAnonymous(
+        this.selectedFile,
+        this.expirationDays
+      );
+
+    uploadRequest.subscribe({
+      next: response => {
+        this.isUploading = false;
+        this.successMessage = 'Fichier envoyé avec succès.';
+        this.selectedFile = null;
+
+        this.anonymousDownloadUrl =
+          `${environment.apiUrl.replace('/api', '')}${response.downloadUrl}`;
+
+        this.anonymousDownloadToken = response.downloadToken;
+
+        if (this.authService.isAuthenticated()) {
           this.loadFiles();
-          this.changeDetectorRef.markForCheck();
-        },
-        error: error => {
-          console.error(
-            'Erreur lors de l’envoi du fichier :',
-            error
-          );
-
-          this.isUploading = false;
-          this.errorMessage =
-            'Impossible d’envoyer le fichier.';
+        } else {
+          this.anonymousDownloadUrl = response.downloadUrl;
         }
-      });
 
+        this.changeDetectorRef.markForCheck();
+      },
+
+      error: error => {
+        console.error(
+          'Erreur lors de l’envoi du fichier :',
+          error
+        );
+
+        this.isUploading = false;
+        this.errorMessage =
+          'Impossible d’envoyer le fichier.';
+      }
+    });
   }
 
   formatFileSize(size: number): string {
@@ -204,5 +233,32 @@ export class Files implements OnInit {
   onLogout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  onAnonymousDownload(): void {
+    this.filesService
+      .downloadFile(this.anonymousDownloadToken)
+      .subscribe({
+        next: blob => {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+
+          link.href = url;
+          link.download = this.selectedFile?.name ?? 'fichier';
+          link.click();
+
+          URL.revokeObjectURL(url);
+        },
+
+        error: error => {
+          console.error(
+            'Erreur lors du téléchargement :',
+            error
+          );
+
+          this.errorMessage =
+            'Impossible de télécharger le fichier.';
+        }
+      });
   }
 }

@@ -44,7 +44,7 @@ export class Login {
     this.authService.login(loginRequest).subscribe({
       next: () => {
         this.isLoading = false;
-        this.router.navigate(['/files']);
+        this.router.navigate(['/']);
       },
       error: () => {
         this.isLoading = false;

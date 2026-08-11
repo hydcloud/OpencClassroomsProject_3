@@ -5,12 +5,12 @@ import { Files } from './features/files/files/files';
 
 export const routes: Routes = [
   {
-    path: 'login',
-    component: Login
+    path: '',
+    component: Files
   },
   {
-    path: 'files',
-    component: Files
+    path: 'login',
+    component: Login
   },
   {
     path: 'register',

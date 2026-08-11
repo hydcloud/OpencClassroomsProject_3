@@ -22,13 +22,39 @@ export class FilesService {
     file: File,
     expirationDays: number
   ): Observable<FileUploadResponse> {
+    return this.sendFile(
+      this.apiUrl,
+      file,
+      expirationDays
+    );
+  }
+
+  uploadAnonymous(
+    file: File,
+    expirationDays: number
+  ): Observable<FileUploadResponse> {
+    return this.sendFile(
+      `${this.apiUrl}/anonymous`,
+      file,
+      expirationDays
+    );
+  }
+
+  private sendFile(
+    url: string,
+    file: File,
+    expirationDays: number
+  ): Observable<FileUploadResponse> {
     const formData = new FormData();
 
     formData.append('file', file);
-    formData.append('expirationDays', expirationDays.toString());
+    formData.append(
+      'expirationDays',
+      expirationDays.toString()
+    );
 
     return this.http.post<FileUploadResponse>(
-      this.apiUrl,
+      url,
       formData
     );
   }
