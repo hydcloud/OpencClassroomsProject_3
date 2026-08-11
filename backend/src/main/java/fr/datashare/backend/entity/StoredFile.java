@@ -30,10 +30,10 @@ public class StoredFile {
     @Column(name = "expires_at", nullable = false)
     private LocalDateTime expiresAt;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(
             name = "user_id",
-            nullable = false,
+            nullable = true,
             foreignKey = @ForeignKey(name = "fk_stored_files_user")
     )
     private User owner;

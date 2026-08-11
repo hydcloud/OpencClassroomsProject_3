@@ -60,6 +60,25 @@ public class FileController {
                 .body(response);
     }
 
+    @PostMapping("/anonymous")
+    public ResponseEntity<FileUploadResponse> uploadAnonymous(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(
+                    name = "expirationDays",
+                    defaultValue = "7"
+            ) int expirationDays
+    ) {
+        FileUploadResponse response =
+                uploadService.uploadAnonymous(
+                        file,
+                        expirationDays
+                );
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+    }
+
     @GetMapping
     public List<FileHistoryResponse> history(
             Authentication authentication

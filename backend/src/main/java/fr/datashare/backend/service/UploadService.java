@@ -53,9 +53,6 @@ public class UploadService {
             int expirationDays,
             String authenticatedEmail
     ) {
-        validateFile(file);
-        validateExpiration(expirationDays);
-
         User owner = userRepository
                 .findByEmail(authenticatedEmail)
                 .orElseThrow(() ->
@@ -64,13 +61,42 @@ public class UploadService {
                         )
                 );
 
+        return processUpload(
+                file,
+                expirationDays,
+                owner
+        );
+    }
+
+    @Transactional
+    public FileUploadResponse uploadAnonymous(
+            MultipartFile file,
+            int expirationDays
+    ) {
+        return processUpload(
+                file,
+                expirationDays,
+                null
+        );
+    }
+
+    private FileUploadResponse processUpload(
+            MultipartFile file,
+            int expirationDays,
+            User owner
+    ) {
+        validateFile(file);
+        validateExpiration(expirationDays);
+
         LocalDateTime expiresAt =
                 LocalDateTime.now().plusDays(expirationDays);
 
-        String storageName = storageService.store(file);
+        String storageName =
+                storageService.store(file);
 
         try {
             StoredFile storedFile = new StoredFile();
+
             storedFile.setOriginalName(resolveOriginalName(file));
             storedFile.setStorageName(storageName);
             storedFile.setMimeType(resolveMimeType(file));
@@ -82,7 +108,10 @@ public class UploadService {
                     storedFileRepository.save(storedFile);
 
             DownloadLink savedLink =
-                    downloadLinkService.createLink(savedFile, expiresAt);
+                    downloadLinkService.createLink(
+                            savedFile,
+                            expiresAt
+                    );
 
             return new FileUploadResponse(
                     savedFile.getId(),
@@ -92,7 +121,7 @@ public class UploadService {
                     savedFile.getUploadedAt(),
                     savedFile.getExpiresAt(),
                     savedLink.getToken(),
-                    "/api/downloads/" + savedLink.getToken()
+                    "/api/files/" + savedLink.getToken() + "/file"
             );
 
         } catch (RuntimeException exception) {
