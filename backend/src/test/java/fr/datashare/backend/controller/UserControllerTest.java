@@ -87,7 +87,10 @@ class UserControllerTest {
                 "MotDePasse123"
         );
 
-        LoginResponse response = new LoginResponse("jwt-token");
+        LoginResponse response = new LoginResponse(
+                "jwt-token",
+                "stephane@example.com"
+        );
 
         when(authService.login(request))
                 .thenReturn(response);
@@ -114,11 +117,11 @@ class UserControllerTest {
                         post("/api/user")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("""
-                                    {
-                                      "email": "email-invalide",
-                                      "password": "123"
-                                    }
-                                    """)
+                                {
+                                  "email": "email-invalide",
+                                  "password": "123"
+                                }
+                                """)
                 )
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.validationErrors.email")

@@ -70,7 +70,7 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
+                .status(HttpStatus.FORBIDDEN)
                 .body(errorResponse);
     }
 
@@ -143,7 +143,7 @@ public class GlobalExceptionHandler {
             InvalidFilePasswordException exception
     ) {
         return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
+                .status(HttpStatus.FORBIDDEN)
                 .body(exception.getMessage());
     }
 }
