@@ -114,19 +114,12 @@ class JwtAuthenticationFilterTest {
         when(jwtService.extractEmail("valid-token"))
                 .thenReturn("test@datashare.fr");
 
-        UserDetails userDetails = mock(UserDetails.class);
-
-        when(userDetails.getUsername())
-                .thenReturn("test@datashare.fr");
-
-        when(userDetails.getAuthorities())
-                .thenReturn(
-                        List.of(
-                                new SimpleGrantedAuthority(
-                                        "ROLE_USER"
-                                )
-                        )
-                );
+        UserDetails userDetails =
+                org.springframework.security.core.userdetails.User
+                        .withUsername("test@datashare.fr")
+                        .password("password")
+                        .authorities("ROLE_USER")
+                        .build();
 
         when(userDetailsService.loadUserByUsername(
                 "test@datashare.fr"
