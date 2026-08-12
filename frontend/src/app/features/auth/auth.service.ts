@@ -13,21 +13,31 @@ export class AuthService {
 
   private readonly apiUrl = environment.apiUrl;
   private readonly tokenKey = 'datashare_token';
+  private readonly emailKey = 'datashare_email';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   login(loginRequest: LoginRequest): Observable<LoginResponse> {
     return this.http
       .post<LoginResponse>(`${this.apiUrl}/login`, loginRequest)
       .pipe(
         tap(response => {
-          localStorage.setItem(this.tokenKey, response.token);
+          localStorage.setItem(
+            this.tokenKey,
+            response.token
+          );
+
+          localStorage.setItem(
+            this.emailKey,
+            response.email
+          );
         })
       );
   }
 
   logout(): void {
     localStorage.removeItem(this.tokenKey);
+    localStorage.removeItem(this.emailKey);
   }
 
   getToken(): string | null {
@@ -36,5 +46,9 @@ export class AuthService {
 
   isAuthenticated(): boolean {
     return this.getToken() !== null;
+  }
+
+  getEmail(): string | null {
+    return localStorage.getItem(this.emailKey);
   }
 }

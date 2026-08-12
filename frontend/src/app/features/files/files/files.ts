@@ -42,6 +42,10 @@ export class Files implements OnInit {
     private readonly changeDetectorRef: ChangeDetectorRef
   ) { }
 
+  get userEmail(): string | null {
+  return this.authService.getEmail();
+}
+
   ngOnInit(): void {
     if (this.authService.isAuthenticated()) {
       this.loadFiles();
@@ -267,11 +271,27 @@ export class Files implements OnInit {
           );
 
           this.errorMessage =
-            error.status === 401
+            error.status === 403
               ? 'Mot de passe incorrect.'
               : 'Impossible de télécharger le fichier.';
+
+          this.changeDetectorRef.markForCheck();
         }
       });
+  }
+
+  onDownloadClick(file: FileHistoryResponse): void {
+
+    const passwordFieldIsOpen =
+      file.passwordProtected &&
+      this.protectedFileToken === file.downloadToken;
+
+    if (passwordFieldIsOpen) {
+      this.onProtectedDownload();
+      return;
+    }
+
+    this.onDownload(file);
   }
 
   onProtectedDownload(): void {
@@ -279,6 +299,8 @@ export class Files implements OnInit {
     if (!this.protectedFileToken) {
       return;
     }
+
+    this.errorMessage = '';
 
     this.downloadFile(
       this.protectedFileToken,

@@ -1,27 +1,5 @@
 <main class="files-page">
 
-    <!-- Barre verticale gauche -->
-    <aside class="side-nav">
-
-        <div class="brand">
-            <span>DATASHARE</span>
-        </div>
-
-        <button type="button" class="nav-item nav-item-active" aria-label="Envoyer un fichier">
-            <span class="nav-icon">↑</span>
-            <span>Envoyer</span>
-        </button>
-
-        @if (isAuthenticated()) {
-        <button type="button" class="nav-item" aria-label="Mes fichiers">
-            <span class="nav-icon">▣</span>
-            <span>Fichiers</span>
-        </button>
-        }
-
-    </aside>
-
-
     <!-- Toute la zone située à droite de la sidebar -->
     <div class="workspace">
 
@@ -33,7 +11,7 @@
                 @if (isAuthenticated()) {
 
                 <div class="account-info">
-                    <strong>Mon compte</strong>
+                    <strong>Bienvenue {{ userEmail }}</strong>
                     <span>DataShare</span>
                 </div>
 
@@ -146,6 +124,12 @@
                         (click)="onProtectedDownload()">
                         Télécharger le fichier
                     </button>
+
+                    @if (errorMessage) {
+                    <p class="error-message">
+                        {{ errorMessage }}
+                    </p>
+                    }
 
                     } @else {
 
@@ -284,21 +268,21 @@
 
                         <div class="file-actions">
 
-                            <button type="button" class="download-button" (click)="onDownload(file)">
-                                Télécharger
-                            </button>
-
                             @if (
                             file.passwordProtected &&
                             protectedFileToken === file.downloadToken
                             ) {
-                            <input type="password" [(ngModel)]="downloadPassword" name="anonymousDownloadPassword"
-                                minlength="6" placeholder="Mot de passe" />
-
-                            <button type="button" class="download-button" (click)="onProtectedDownload()">
-                                Valider
-                            </button>
+                            <input type="password" [(ngModel)]="downloadPassword" name="downloadPassword" minlength="6"
+                                placeholder="Mot de passe" />
                             }
+
+                            <button type="button" class="download-button" [disabled]="
+      file.passwordProtected &&
+      protectedFileToken === file.downloadToken &&
+      downloadPassword.length < 6
+    " (click)="onDownloadClick(file)">
+                                Télécharger
+                            </button>
 
                             <button type="button" class="delete-button" (click)="onDelete(file.id)">
                                 Supprimer
