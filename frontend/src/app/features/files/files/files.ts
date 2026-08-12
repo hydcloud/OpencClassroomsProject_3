@@ -43,8 +43,8 @@ export class Files implements OnInit {
   ) { }
 
   get userEmail(): string | null {
-  return this.authService.getEmail();
-}
+    return this.authService.getEmail();
+  }
 
   ngOnInit(): void {
     if (this.authService.isAuthenticated()) {
@@ -150,6 +150,8 @@ export class Files implements OnInit {
         this.isUploading = false;
         this.errorMessage =
           'Impossible d’envoyer le fichier.';
+
+        this.changeDetectorRef.markForCheck();
       }
     });
   }
@@ -227,6 +229,9 @@ export class Files implements OnInit {
   }
 
   onDownload(file: FileHistoryResponse): void {
+
+    this.errorMessage = '';
+    this.downloadPassword = '';
 
     if (file.passwordProtected) {
       this.protectedFileToken = file.downloadToken;
@@ -315,29 +320,9 @@ export class Files implements OnInit {
   }
 
   onAnonymousDownload(): void {
-    this.filesService
-      .downloadFile(this.anonymousDownloadToken)
-      .subscribe({
-        next: blob => {
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-
-          link.href = url;
-          link.download = this.selectedFile?.name ?? 'fichier';
-          link.click();
-
-          URL.revokeObjectURL(url);
-        },
-
-        error: error => {
-          console.error(
-            'Erreur lors du téléchargement :',
-            error
-          );
-
-          this.errorMessage =
-            'Impossible de télécharger le fichier.';
-        }
-      });
+    this.downloadFile(
+      this.anonymousDownloadToken,
+      this.protectedFileName || 'fichier'
+    );
   }
 }

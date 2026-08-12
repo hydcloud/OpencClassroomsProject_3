@@ -306,20 +306,6 @@ button {
 }
 
 
-.section-label {
-  display: block;
-
-  margin-bottom: 7px;
-
-  color: #315cf4;
-
-  font-size: 11px;
-  font-weight: 800;
-
-  letter-spacing: 0.12em;
-}
-
-
 .files-header h1 {
   margin: 0 0 7px;
 
@@ -502,6 +488,22 @@ button {
   gap: 8px;
 }
 
+  .password-download {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .password-download input {
+    width: 180px;
+    box-sizing: border-box;
+  }
+
+  .password-download .error-message {
+    font-size: 0.8rem;
+    margin: 0;
+  }
+
 
 .file-actions button {
   border: 0;
@@ -632,14 +634,6 @@ button {
 
 @media (max-width: 700px) {
 
-  .side-nav {
-    width: 60px;
-  }
-
-  .nav-item {
-    width: 50px;
-  }
-
   .page-content {
     padding: 20px;
   }
@@ -668,22 +662,6 @@ button {
 
   .file-actions {
     flex-wrap: wrap;
-  }
-
-  .password-download {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .password-download input {
-    width: 180px;
-    box-sizing: border-box;
-  }
-
-  .password-download .error-message {
-    font-size: 0.8rem;
-    margin: 0;
   }
 
 }

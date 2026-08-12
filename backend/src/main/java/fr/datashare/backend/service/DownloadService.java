@@ -65,31 +65,4 @@ public class DownloadService {
             String mimeType
     ) {
     }
-
-    public Resource download(
-            String token,
-            String password
-    ) {
-        DownloadLink downloadLink =
-                downloadLinkService.findValidLink(token);
-
-        StoredFile storedFile =
-                downloadLink.getStoredFile();
-
-        if (storedFile.getPasswordHash() != null) {
-
-            if (password == null ||
-                    !passwordEncoder.matches(
-                            password,
-                            storedFile.getPasswordHash()
-                    )) {
-
-                throw new InvalidFilePasswordException();
-            }
-        }
-
-        return storageService.load(
-                storedFile.getStorageName()
-        );
-    }
 }

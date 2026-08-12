@@ -1,7 +1,6 @@
 package fr.datashare.backend.repository;
 
 import fr.datashare.backend.entity.DownloadLink;
-import fr.datashare.backend.entity.StoredFile;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
@@ -13,7 +12,4 @@ public interface DownloadLinkRepository
 
     boolean existsByToken(String token);
 
-    Optional<DownloadLink> findByStoredFile(
-            StoredFile storedFile
-    );
 }
