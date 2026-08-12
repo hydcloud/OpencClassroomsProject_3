@@ -1,0 +1,580 @@
+======================================================================
+US09 — AJOUT D’UN MOT DE PASSE À UN FICHIER
+======================================================================
+
+OBJECTIF
+
+Permettre à un utilisateur connecté ou anonyme de protéger un fichier
+par mot de passe lors de son envoi.
+
+Règles de gestion : - mot de passe facultatif lors de l’upload ; - mot
+de passe requis au téléchargement si le fichier est protégé ; - minimum
+6 caractères ; - stockage uniquement sous forme hashée ; - aucun
+mécanisme de récupération du mot de passe ; - fonctionnalité disponible
+pour les utilisateurs connectés et anonymes.
+
+====================================================================== 1.
+BASE DE DONNÉES — POSTGRESQL
+======================================================================
+
+Table : stored_files
+
+ALTER TABLE stored_files ADD COLUMN password_hash VARCHAR(255);
+
+La colonne est nullable : un fichier peut donc rester sans protection.
+
+======================================================================
+2. BACKEND — SPRING BOOT
+======================================================================
+
+2.1 StoredFile.java
+
+Fichier :
+backend/src/main/java/fr/datashare/backend/entity/StoredFile.java
+
+Ajout :
+
+@Column(name = “password_hash”) private String passwordHash;
+
+Accesseur et mutateur :
+
+public String getPasswordHash() { return passwordHash; }
+
+public void setPasswordHash(String passwordHash) { this.passwordHash =
+passwordHash; }
+
+passwordHash contient uniquement le hash et jamais le mot de passe
+original.
+
+2.2 UploadService.java — validation et hashage
+
+Fichier :
+backend/src/main/java/fr/datashare/backend/service/UploadService.java
+
+Injection de PasswordEncoder :
+
+private final PasswordEncoder passwordEncoder;
+
+Import :
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+Les méthodes upload(), uploadAnonymous() et processUpload() reçoivent
+désormais un paramètre String password.
+
+Validation et hashage :
+
+private String resolvePasswordHash(String password) { if (password ==
+null || password.isBlank()) { return null; }
+
+    if (password.length() < 6) {
+        throw new FileUploadException(
+                "Le mot de passe doit contenir au moins 6 caractères."
+        );
+    }
+
+    return passwordEncoder.encode(password);
+
+}
+
+Dans processUpload() :
+
+String passwordHash = resolvePasswordHash(password);
+
+Puis :
+
+storedFile.setPasswordHash(passwordHash);
+
+Un mot de passe absent produit donc passwordHash = null. Un mot de passe
+valide est hashé avant l’enregistrement.
+
+2.3 FileController.java — upload
+
+Fichier :
+backend/src/main/java/fr/datashare/backend/controller/FileController.java
+
+Les endpoints d’upload authentifié et anonyme acceptent désormais :
+
+@RequestParam( name = “password”, required = false ) String password
+
+Le paramètre est ensuite transmis à UploadService.
+
+2.4 DownloadFileRequest.java
+
+Fichier :
+backend/src/main/java/fr/datashare/backend/dto/file/DownloadFileRequest.java
+
+public record DownloadFileRequest( String password ) { }
+
+Ce DTO permet de transmettre le mot de passe dans le corps de la requête
+de téléchargement.
+
+2.5 DownloadService.java — contrôle du mot de passe
+
+Fichier :
+backend/src/main/java/fr/datashare/backend/service/DownloadService.java
+
+Injection de PasswordEncoder puis évolution de loadDownloadFile() afin
+qu’elle reçoive :
+
+-   le token ;
+-   le mot de passe éventuellement saisi.
+
+Contrôle :
+
+if (storedFile.getPasswordHash() != null) { if (password == null ||
+!passwordEncoder.matches( password, storedFile.getPasswordHash() )) {
+
+        throw new InvalidFilePasswordException();
+    }
+
+}
+
+Sans passwordHash, le téléchargement reste direct. Avec passwordHash,
+PasswordEncoder.matches() valide le mot de passe reçu.
+
+2.6 InvalidFilePasswordException.java
+
+Fichier : backend/src/main/java/fr/datashare/backend/exception/
+InvalidFilePasswordException.java
+
+public class InvalidFilePasswordException extends RuntimeException {
+
+    public InvalidFilePasswordException() {
+        super("Mot de passe du fichier invalide.");
+    }
+
+}
+
+2.7 GlobalExceptionHandler.java
+
+Fichier : backend/src/main/java/fr/datashare/backend/exception/
+GlobalExceptionHandler.java
+
+Ajout :
+
+@ExceptionHandler(InvalidFilePasswordException.class) public
+ResponseEntity handleInvalidFilePassword( InvalidFilePasswordException
+exception ) { return ResponseEntity .status(HttpStatus.FORBIDDEN)
+.body(exception.getMessage()); }
+
+Un mot de passe absent ou incorrect pour un fichier protégé retourne
+HTTP 403.
+
+2.8 FileController.java — téléchargement
+
+Le téléchargement passe de GET à POST afin de transmettre le mot de
+passe dans le corps de la requête :
+
+@PostMapping(“/{token}/file”) public ResponseEntity download(
+@PathVariable String token, @RequestBody(required = false)
+DownloadFileRequest request ) { String password = request == null ? null
+: request.password();
+
+    DownloadService.DownloadResource download =
+            downloadService.loadDownloadFile(
+                    token,
+                    password
+            );
+
+    MediaType mediaType;
+
+    try {
+        mediaType = MediaType.parseMediaType(
+                download.mimeType()
+        );
+    } catch (IllegalArgumentException exception) {
+        mediaType = MediaType.APPLICATION_OCTET_STREAM;
+    }
+
+    ContentDisposition contentDisposition =
+            ContentDisposition.attachment()
+                    .filename(
+                            download.originalName(),
+                            StandardCharsets.UTF_8
+                    )
+                    .build();
+
+    return ResponseEntity.ok()
+            .contentType(mediaType)
+            .header(
+                    HttpHeaders.CONTENT_DISPOSITION,
+                    contentDisposition.toString()
+            )
+            .body(download.resource());
+
+}
+
+2.9 FileHistoryResponse.java et FileHistoryService.java
+
+Ajout dans FileHistoryResponse :
+
+boolean passwordProtected
+
+Dans FileHistoryService :
+
+file.getPasswordHash() != null
+
+Le frontend sait ainsi si un fichier de l’historique est protégé sans
+jamais recevoir son hash.
+
+2.10 FileUploadResponse.java — cas anonyme
+
+Ajout :
+
+boolean passwordProtected
+
+Dans UploadService, la valeur retournée est :
+
+savedFile.getPasswordHash() != null
+
+Cette information est nécessaire pour l’utilisateur anonyme, qui ne
+dispose pas de l’historique des fichiers.
+
+2.11 SecurityConfig.java
+
+Le téléchargement étant désormais effectué en POST, la route publique
+est adaptée :
+
+.authorizeHttpRequests(auth -> auth .requestMatchers( HttpMethod.POST,
+“/api/user”, “/api/login”, “/api/files/anonymous”, “/api/files/*/file”
+).permitAll() .requestMatchers( HttpMethod.GET, “/api/health”
+).permitAll() .anyRequest().authenticated() )
+
+Le téléchargement par token reste ainsi accessible aux utilisateurs
+anonymes.
+
+2.12 FileControllerTest.java
+
+Les tests existants sont adaptés aux nouveaux contrats :
+
+-   UploadService.upload() reçoit le paramètre password ;
+-   FileHistoryResponse reçoit passwordProtected ;
+-   FileUploadResponse reçoit passwordProtected ;
+-   pour un fichier non protégé, les tests utilisent null / false selon
+    le paramètre concerné.
+
+======================================================================
+3. FRONTEND — ANGULAR
+======================================================================
+
+3.1 files.service.ts — upload
+
+Les méthodes upload() et uploadAnonymous() acceptent désormais :
+
+password?: string
+
+La méthode privée sendFile() reçoit également password et l’ajoute au
+FormData uniquement lorsqu’il est renseigné :
+
+if (password && password.trim().length > 0) {
+formData.append(‘password’, password); }
+
+3.2 files.ts et files.html — protection à l’upload
+
+Ajout dans Files :
+
+password = ’’;
+
+Le mot de passe est transmis à filesService.upload() ou
+filesService.uploadAnonymous().
+
+Après un upload réussi :
+
+this.password = ’’;
+
+Dans files.html, ajout du champ :
+
+    <label for="password">
+        Mot de passe de protection
+    </label>
+
+    <input
+        id="password"
+        type="password"
+        name="password"
+        [(ngModel)]="password"
+        minlength="6"
+        autocomplete="new-password"
+    />
+
+    <small>
+        Facultatif — 6 caractères minimum.
+    </small>
+
+3.3 files.service.ts — téléchargement
+
+La méthode downloadFile() utilise maintenant POST :
+
+downloadFile( token: string, password?: string ): Observable { return
+this.http.post( ${this.apiUrl}/${token}/file, { password: password ??
+null }, { responseType: ‘blob’ } ); }
+
+3.4 Modèles Angular
+
+file-history-response.ts :
+
+passwordProtected: boolean;
+
+file-upload-response.ts :
+
+passwordProtected: boolean;
+
+3.5 files.ts — téléchargement protégé
+
+Ajout :
+
+downloadPassword = ’‘; protectedFileToken: string | null = null;
+protectedFileName =’’;
+
+onDownload() vérifie file.passwordProtected.
+
+Si false : - téléchargement immédiat.
+
+Si true : - mémorisation du token et du nom ; - attente de la saisie du
+mot de passe.
+
+La méthode privée downloadFile() centralise l’appel au service et la
+création du Blob de téléchargement.
+
+En cas de HTTP 403 :
+
+‘Mot de passe incorrect.’
+
+onProtectedDownload() transmet ensuite :
+
+this.protectedFileToken this.protectedFileName this.downloadPassword
+
+3.6 files.html / files.ts — utilisateur authentifié
+
+Pour éviter le doublon entre un bouton « Télécharger » puis un bouton
+« Valider », le téléchargement protégé utilise désormais un seul bouton.
+
+Ajout d'une méthode de décision dans files.ts :
+
+onDownloadClick(file: FileHistoryResponse): void {
+
+    const passwordFieldIsOpen =
+        file.passwordProtected &&
+        this.protectedFileToken === file.downloadToken;
+
+    if (passwordFieldIsOpen) {
+        this.onProtectedDownload();
+        return;
+    }
+
+    this.onDownload(file);
+}
+
+La méthode onDownload() conserve les responsabilités suivantes :
+
+- fichier non protégé :
+  téléchargement immédiat ;
+
+- fichier protégé :
+  mémorisation du token et du nom du fichier ;
+  remise à zéro de downloadPassword ;
+  affichage du champ de mot de passe.
+
+Le template utilise ensuite un seul bouton :
+
+<button
+    type="button"
+    class="download-button"
+    [disabled]="
+        file.passwordProtected &&
+        protectedFileToken === file.downloadToken &&
+        downloadPassword.length < 6
+    "
+    (click)="onDownloadClick(file)">
+    Télécharger
+</button>
+
+Le premier clic sur Télécharger affiche le champ si le fichier est protégé.
+Après saisie du mot de passe, le même bouton lance onProtectedDownload().
+
+
+3.6.1 Gestion du mauvais mot de passe
+
+InvalidFilePasswordException renvoie désormais HTTP 403 Forbidden et non
+HTTP 401 Unauthorized, afin d'éviter que l'interceptor d'authentification
+n'interprète l'erreur comme une session invalide.
+
+Dans GlobalExceptionHandler :
+
+@ExceptionHandler(InvalidFilePasswordException.class)
+public ResponseEntity<String> handleInvalidFilePassword(
+        InvalidFilePasswordException exception
+) {
+    return ResponseEntity
+            .status(HttpStatus.FORBIDDEN)
+            .body(exception.getMessage());
+}
+
+Dans files.ts :
+
+error: error => {
+    console.error(
+        'Erreur lors du téléchargement :',
+        error
+    );
+
+    this.errorMessage =
+        error.status === 403
+            ? 'Mot de passe incorrect.'
+            : 'Impossible de télécharger le fichier.';
+
+    this.changeDetectorRef.markForCheck();
+}
+
+Le message est affiché sous le champ de mot de passe du fichier concerné.
+Le champ et le message sont regroupés dans un conteneur password-download
+afin d'éviter de déformer la ligne du fichier.
+
+3.7 files.ts — utilisateur anonyme
+
+Ajout :
+
+anonymousPasswordProtected = false;
+
+Après un upload anonyme :
+
+this.anonymousDownloadUrl =
+${environment.apiUrl.replace('/api', '')}${response.downloadUrl};
+
+this.anonymousDownloadToken = response.downloadToken;
+
+this.anonymousPasswordProtected = response.passwordProtected;
+
+this.protectedFileToken = response.downloadToken;
+
+this.protectedFileName = response.originalName;
+
+3.8 files.html — téléchargement anonyme
+
+Si anonymousPasswordProtected vaut false :
+- téléchargement direct.
+
+Si anonymousPasswordProtected vaut true :
+- affichage du champ de mot de passe ;
+- bouton désactivé tant que le mot de passe contient moins de 6 caractères ;
+- appel de onProtectedDownload() ;
+- affichage de « Mot de passe incorrect. » en cas de HTTP 403.
+
+Le mot de passe de téléchargement utilise :
+
+[(ngModel)]="downloadPassword"
+
+Le cas anonyme et le cas authentifié utilisent donc la même logique de
+validation du mot de passe et le même statut métier HTTP 403.
+
+3.9 Déconnexion — retour à l’accueil
+
+Modification complémentaire réalisée en fin d’intégration :
+
+onLogout(): void { this.authService.logout();
+this.router.navigate([‘/’]); }
+
+Après déconnexion, l’utilisateur revient donc sur la page principale
+publique au lieu de la page de connexion.
+
+======================================================================
+4. FLUX FONCTIONNEL
+======================================================================
+
+UPLOAD PROTÉGÉ
+
+Mot de passe ↓ Validation minimum 6 caractères ↓
+PasswordEncoder.encode() ↓ Hash enregistré dans
+stored_files.password_hash ↓ Mot de passe original non conservé
+
+TÉLÉCHARGEMENT PROTÉGÉ
+
+Clic sur Télécharger ↓ passwordProtected = true ↓ Affichage du champ de
+mot de passe ↓ POST /api/files/{token}/file ↓ DownloadFileRequest ↓
+PasswordEncoder.matches() ↓ Mot de passe correct → téléchargement Mot de
+passe incorrect → HTTP 403
+
+======================================================================
+5. VALIDATION
+======================================================================
+
+Scénarios vérifiés :
+
+-   connecté + fichier sans mot de passe : téléchargement direct ;
+-   connecté + fichier protégé : mot de passe demandé ;
+-   anonyme + fichier sans mot de passe : téléchargement direct ;
+-   anonyme + fichier protégé : mot de passe demandé ;
+-   mauvais mot de passe : HTTP 403 Forbidden et message visible ;
+-   bon mot de passe : téléchargement autorisé ;
+-   mot de passe d’upload vidé après l’envoi.
+
+======================================================================
+6. TESTS BACKEND
+======================================================================
+
+Commande :
+
+mvn clean test
+
+Résultat :
+
+Tests run: 11, Failures: 0, Errors: 0, Skipped: 0
+
+BUILD SUCCESS
+
+======================================================================
+7. COMMITS GIT
+======================================================================
+
+Backend : ajout de la protection des fichiers par mot de passe
+
+Frontend : Frontend : ajout de la protection des fichiers par mot de
+passe
+
+======================================================================
+8. RÉSULTAT FINAL
+======================================================================
+
+L’US09 permet aux utilisateurs connectés et anonymes de protéger leurs
+fichiers par mot de passe.
+
+Le mot de passe : - est facultatif à l’upload ; - comporte au minimum 6
+caractères lorsqu’il est renseigné ; - est stocké uniquement sous forme
+hashée ; - est vérifié lors du téléchargement ; - n’est jamais exposé au
+frontend sous forme de hash.
+
+Le frontend reçoit uniquement l’information passwordProtected.
+
+Les fichiers non protégés conservent leur téléchargement direct.
+
+
+======================================================================
+9. CONTRÔLES FINAUX À EFFECTUER
+======================================================================
+
+BACKEND
+- vérifier qu'aucienne ancienne méthode GET de téléchargement ne subsiste ;
+- conserver une seule méthode loadDownloadFile(token, password) ;
+- InvalidFilePasswordException doit renvoyer uniquement HTTP 403 ;
+- aucun password/passwordHash ne doit être exposé dans les DTO de réponse ;
+- éviter tout doublon de logique de hashage hors UploadService.
+
+FRONTEND
+- downloadFile() utilise uniquement POST pour /api/files/{token}/file ;
+- aucun ancien bouton « Valider » ne subsiste ;
+- un seul flux de téléchargement protégé :
+  onDownloadClick() -> onDownload()/onProtectedDownload() -> downloadFile() ;
+- aucun affichage du message d'erreur ne doit subsister en doublon ;
+- le statut 403 affiche « Mot de passe incorrect. » sans déconnexion ;
+- onLogout() redirige vers '/'.
+
+TESTS
+- mvn clean test ;
+- connecté sans mot de passe ;
+- connecté avec bon mot de passe ;
+- connecté avec mauvais mot de passe -> HTTP 403 + message, sans logout ;
+- anonyme sans mot de passe ;
+- anonyme avec bon mot de passe ;
+- anonyme avec mauvais mot de passe -> HTTP 403 + message ;
+- vérifier en base que password_hash est NULL ou hashé, jamais en clair.

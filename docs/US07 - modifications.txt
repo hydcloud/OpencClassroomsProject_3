@@ -1,0 +1,528 @@
+======================================================================
+DATASHARE — JOURNAL DES MODIFICATIONS
+US07 — Upload anonyme
+======================================================================
+
+Ce document regroupe les modifications réalisées pour permettre
+l'upload de fichiers par un utilisateur non authentifié, tout en
+conservant le fonctionnement existant pour les utilisateurs connectés.
+
+US07 — UPLOAD ANONYME
+
+1. MODIFICATIONS DE LA ROUTINE DE CONNEXION 
+
+
+======================================================================
+2. FRONTEND — ANGULAR
+======================================================================
+
+Modification de la routine de login => Authentification directe sur la page d'accueil et non via une page register
+
+--- app.routes.ts ----------------------------------------------------- 
+export const routes: Routes = [
+  {
+    path: '',
+    component: Files
+  },
+  {
+    path: 'login',
+    component: Login
+  },
+  {
+    path: 'register',
+    component: Register
+  }
+];
+
+
+--- files.service.ts --------------------------------------------------
+
+Création d'une méthode privée sendFile()
+
+  private sendFile(
+    url: string,
+    file: File,
+    expirationDays: number
+  ): Observable<FileUploadResponse> {
+    const formData = new FormData();
+
+    formData.append('file', file);
+    formData.append(
+      'expirationDays',
+      expirationDays.toString()
+    );
+
+    return this.http.post<FileUploadResponse>(
+      url,
+      formData
+    );
+  }
+
+Cette méthode sera retournée par la méthode upload() et la nouvelle méthode uploadAnonymous()
+
+  upload(
+    file: File,
+    expirationDays: number
+  ): Observable<FileUploadResponse> {
+    return this.sendFile(
+      this.apiUrl,
+      file,
+      expirationDays
+    );
+  }
+
+  uploadAnonymous(
+    file: File,
+    expirationDays: number
+  ): Observable<FileUploadResponse> {
+    return this.sendFile(
+      `${this.apiUrl}/anonymous`,
+      file,
+      expirationDays
+    );
+  }
+
+
+--- files.ts ----------------------------------------------------------
+
+Appel dynamique de la nouvelle méthode :
+
+Ajouter l'import de RouterLink :
+import { Router, RouterLink } from '@angular/router';
+
+Puis dans le @Component :
+imports: [
+  FormsModule,
+  DatePipe,
+  RouterLink
+],
+
+Ajouter une méthode pour savoir si l'utilisateur est connecté : 
+
+Remplacer 
+ngOnInit(): void {
+  this.loadFiles();
+}
+
+par
+ngOnInit(): void {
+  if (this.authService.isAuthenticated()) {
+    this.loadFiles();
+  }
+}
+
+isAuthenticated(): boolean {
+  return this.authService.isAuthenticated();
+}
+
+Modifier onUpload() pour choisir automatiquement l'upload d'un user logué ou anonyme : 
+
+remplacer :
+
+this.filesService
+  .upload(this.selectedFile, this.expirationDays)
+  .subscribe({
+
+par 
+
+const uploadRequest = this.authService.isAuthenticated()
+  ? this.filesService.upload(
+      this.selectedFile,
+      this.expirationDays
+    )
+  : this.filesService.uploadAnonymous(
+      this.selectedFile,
+      this.expirationDays
+    );
+
+uploadRequest.subscribe({
+
+Dans le next :
+
+remplacer 
+
+next: () => {
+  this.isUploading = false;
+  this.successMessage = 'Fichier envoyé avec succès.';
+  this.selectedFile = null;
+  this.loadFiles();
+  this.changeDetectorRef.markForCheck();
+},
+
+par 
+
+next: () => {
+  this.isUploading = false;
+  this.successMessage = 'Fichier envoyé avec succès.';
+  this.selectedFile = null;
+
+  if (this.authService.isAuthenticated()) {
+    this.loadFiles();
+  }
+
+  this.changeDetectorRef.markForCheck();
+},
+
+On ajoute la gestion du lien anonyme : 
+
+uploadRequest.subscribe({
+  next: response => {
+    this.isUploading = false;
+    this.successMessage = 'Fichier envoyé avec succès.';
+    this.selectedFile = null;
+
+    if (this.authService.isAuthenticated()) {
+      this.loadFiles();
+    } else {
+      this.anonymousDownloadUrl = response.downloadUrl;
+    }
+
+    this.changeDetectorRef.markForCheck();
+  },
+
+  error: error => {
+    console.error(
+      'Erreur lors de l’envoi du fichier :',
+      error
+    );
+
+    this.isUploading = false;
+    this.errorMessage =
+      'Impossible d’envoyer le fichier.';
+  }
+});
+
+
+--- files.html -------------------------------------------------------- 
+
+Sidebar : 
+
+Masquer "Fichiers" pour l'utilisateur anonyme : 
+
+<button
+    type="button"
+    class="nav-item nav-item-active"
+    aria-label="Envoyer un fichier">
+    <span class="nav-icon">↑</span>
+    <span>Envoyer</span>
+</button>
+
+@if (isAuthenticated()) {
+    <button
+        type="button"
+        class="nav-item"
+        aria-label="Mes fichiers">
+        <span class="nav-icon">▣</span>
+        <span>Fichiers</span>
+    </button>
+}
+
+Topbar :
+
+<div class="account-box">
+
+    @if (isAuthenticated()) {
+
+        <div class="account-info">
+            <strong>Mon compte</strong>
+            <span>DataShare</span>
+        </div>
+
+        <button
+            type="button"
+            class="logout-button"
+            (click)="onLogout()">
+            Déconnexion
+        </button>
+
+    } @else {
+
+        <a
+            routerLink="/login"
+            class="login-button">
+            Se connecter
+        </a>
+
+        <a
+            routerLink="/register"
+            class="register-button">
+            Créer un compte
+        </a>
+
+    }
+
+</div>
+
+Ensuite, on affiche à l'utilisateur anonyme le lien de téléchargement de son fichier après son upload
+
+Ajout de : 
+
+@if (anonymousDownloadUrl) {
+  <div class="anonymous-link">
+
+    <p>
+      Votre lien de téléchargement :
+    </p>
+
+    <a
+      [href]="anonymousDownloadUrl"
+      target="_blank"
+      rel="noopener noreferrer">
+      {{ anonymousDownloadUrl }}
+    </a>
+
+  </div>
+}
+
+
+======================================================================
+3. BACKEND — SPRING BOOT
+======================================================================
+
+--- StoredFile.java ---------------------------------------------------
+backend/src/main/java/fr/datashare/backend/entity/StoredFile.java
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(
+            name = "user_id",
+            nullable = false,
+            foreignKey = @ForeignKey(name = "fk_stored_files_user")
+    )
+
+On désactive la relation obligatoire entre le StoredFile et le user côté JPA : 
+optional = true
+Côté base de données, autoriser également la colonne user_id à être NULL
+nullable = true
+
+
+--- UploadService.java ------------------------------------------------
+backend/src/main/java/fr/datashare/backend/service/UploadService.java
+
+Modification de la méthode @Transactional upload() :
+    @Transactional
+    public FileUploadResponse upload(
+            MultipartFile file,
+            int expirationDays,
+            String authenticatedEmail
+    ) {
+        User owner = userRepository
+                .findByEmail(authenticatedEmail)
+                .orElseThrow(() ->
+                        new FileUploadException(
+                                "L'utilisateur authentifié est introuvable."
+                        )
+                );
+
+        return processUpload(
+                file,
+                expirationDays,
+                owner
+        );
+    }
+
+Puis ajout d'un second @Transactional relatif à l'upload-anonymous :
+@Transactional
+public FileUploadResponse uploadAnonymous(
+        MultipartFile file,
+        int expirationDays
+) {
+    return processUpload(
+            file,
+            expirationDays,
+            null
+    );
+}
+
+Puis on sépare la méthode commune privée processUpload() : 
+    private FileUploadResponse processUpload(
+            MultipartFile file,
+            int expirationDays,
+            User owner
+    ) {
+        validateFile(file);
+        validateExpiration(expirationDays);
+
+        LocalDateTime expiresAt =
+                LocalDateTime.now().plusDays(expirationDays);
+
+        String storageName =
+                storageService.store(file);
+
+        try {
+            StoredFile storedFile = new StoredFile();
+
+            storedFile.setOriginalName(resolveOriginalName(file));
+            storedFile.setStorageName(storageName);
+            storedFile.setMimeType(resolveMimeType(file));
+            storedFile.setSize(file.getSize());
+            storedFile.setExpiresAt(expiresAt);
+            storedFile.setOwner(owner);
+
+            StoredFile savedFile =
+                    storedFileRepository.save(storedFile);
+
+            DownloadLink savedLink =
+                    downloadLinkService.createLink(
+                            savedFile,
+                            expiresAt
+                    );
+
+            return new FileUploadResponse(
+                    savedFile.getId(),
+                    savedFile.getOriginalName(),
+                    savedFile.getMimeType(),
+                    savedFile.getSize(),
+                    savedFile.getUploadedAt(),
+                    savedFile.getExpiresAt(),
+                    savedLink.getToken(),
+                    "/api/files/" + savedLink.getToken() + "/file"
+            );
+
+        } catch (RuntimeException exception) {
+            storageService.delete(storageName);
+
+            throw new FileUploadException(
+                    "L'enregistrement du fichier a échoué.",
+                    exception
+            );
+        }
+    }
+
+
+--- FileController.java -----------------------------------------------
+backend/src/main/java/fr/datashare/backend/controller/FileController.java
+
+Ajout de l'endpoint relatif à upload-anonymous : 
+
+    @PostMapping("/anonymous")
+    public ResponseEntity<FileUploadResponse> uploadAnonymous(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(
+                    name = "expirationDays",
+                    defaultValue = "7"
+            ) int expirationDays
+    ) {
+        FileUploadResponse response =
+                uploadService.uploadAnonymous(
+                        file,
+                        expirationDays
+                );
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+    }
+
+
+--- SecurityConfig.java -----------------------------------------------
+backend/src/main/java/fr/datashare/backend/config/SecurityConfig.java
+
+Rendre l'endpoint POST /api/files/anonymous public
+
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/user",
+                                "/api/login",
+                                "/api/files/anonymous"
+                        ).permitAll()
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/health",
+                                "/api/files/*/file"
+                        ).permitAll()
+                        .anyRequest().authenticated()
+
+
+BASE DE DONNÉES — POSTGRESQL
+
+Rendre également la colonne nullable en base
+ALTER TABLE stored_files
+ALTER COLUMN user_id DROP NOT NULL;
+
+
+======================================================================
+4. RÉCAPITULATIF ET VALIDATION
+======================================================================
+
+US07 — Ajout de l'upload anonyme
+
+Objectif :
+Permettre à un utilisateur non authentifié d'envoyer un fichier et d'obtenir
+un lien de téléchargement, sans rattacher le fichier à un compte utilisateur.
+
+BACKEND
+
+- Modification de StoredFile afin de rendre la relation avec User facultative.
+  → Un fichier authentifié possède un user_id.
+  → Un fichier anonyme possède user_id = NULL.
+
+- Modification de UploadService :
+  → conservation de upload() pour les utilisateurs authentifiés.
+  → ajout de uploadAnonymous() pour les utilisateurs anonymes.
+  → factorisation du traitement commun de l'upload dans une méthode privée.
+  → l'upload anonyme ne recherche/ne rattache aucun User.
+
+- Modification de FileController :
+  → POST /api/files : upload authentifié.
+  → POST /api/files/anonymous : upload anonyme.
+
+- Modification de SecurityConfig :
+  → POST /api/files/anonymous autorisé sans authentification.
+  → POST /api/files reste protégé par JWT.
+  → le téléchargement par token reste accessible publiquement.
+
+FRONTEND ANGULAR
+
+- Modification de la route d'accueil :
+  → la page principale est désormais accessible sans authentification.
+  → le login reste accessible depuis l'interface.
+
+- Modification de FilesService :
+  → upload() utilise POST /api/files.
+  → ajout de uploadAnonymous() utilisant POST /api/files/anonymous.
+  → factorisation de la création du FormData et du POST dans sendFile().
+
+- Modification du composant Files :
+  → vérification de l'état d'authentification avec AuthService.
+  → utilisateur connecté : appel de upload().
+  → utilisateur anonyme : appel de uploadAnonymous().
+  → l'historique n'est chargé que pour un utilisateur authentifié.
+  → récupération du downloadToken/downloadUrl après un upload anonyme.
+
+- Modification de FileUploadResponse :
+  → ajout de downloadToken et downloadUrl correspondant aux données
+    retournées par le backend.
+
+- Modification de l'interface :
+  → l'upload reste visible pour tous.
+  → "Mes fichiers" est uniquement visible pour un utilisateur connecté.
+  → un utilisateur anonyme voit les liens Se connecter / Créer un compte.
+  → après un upload anonyme, le lien de téléchargement généré est affiché.
+  → aucun historique ni gestion du fichier n'est proposé à l'anonyme.
+
+TESTS MANUELS
+
+Upload anonyme :
+  → accès à l'accueil sans JWT : OK
+  → POST /api/files/anonymous : OK
+  → stockage du fichier : OK
+  → user_id = NULL en base : OK
+  → génération du token : OK
+  → affichage du lien : OK
+  → téléchargement du fichier : OK
+
+Upload authentifié :
+  → connexion : OK
+  → POST /api/files : OK
+  → fichier rattaché à l'utilisateur : OK
+  → historique : OK
+  → téléchargement : OK
+
+Tests Maven :
+  → 11 tests exécutés
+  → 0 failure
+  → 0 error
+  → BUILD SUCCESS
+
+Commit :
+feat: ajout de l'upload anonyme
