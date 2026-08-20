@@ -99,6 +99,7 @@ export class Files implements OnInit {
     this.isUploading = true;
     this.errorMessage = '';
     this.successMessage = '';
+    this.anonymousDownloadUrl = '';
 
     const uploadRequest = this.authService.isAuthenticated()
       ? this.filesService.upload(

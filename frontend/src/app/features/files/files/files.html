@@ -112,7 +112,36 @@
                 </div>
                 }
 
+                            @if (anonymousDownloadUrl) {
+                <div class="anonymous-link">
+
+                    <p>Votre lien de téléchargement :</p>
+
+                    <span>{{ anonymousDownloadUrl }}</span>
+
+                    @if (anonymousPasswordProtected) {
+
+                    <input type="password" [(ngModel)]="downloadPassword" name="anonymousDownloadPassword" minlength="6"
+                        placeholder="Mot de passe" />
+
+                    <button type="button" class="download-button" [disabled]="downloadPassword.length < 6"
+                        (click)="onProtectedDownload()">
+                        Télécharger le fichier
+                    </button>
+
+                    } @else {
+
+                    <button type="button" (click)="onAnonymousDownload()">
+                        Télécharger le fichier
+                    </button>
+
+                    }
+
+                </div>
+                }
+
             </section>
+
 
             <!-- Partie centrale -->
             @if (isAuthenticated()) {
@@ -143,34 +172,6 @@
                 @if (isLoading) {
                 <div class="state-message">
                     Chargement des fichiers...
-                </div>
-                }
-
-                @if (anonymousDownloadUrl) {
-                <div class="anonymous-link">
-
-                    <p>Votre lien de téléchargement :</p>
-
-                    <span>{{ anonymousDownloadUrl }}</span>
-
-                    @if (anonymousPasswordProtected) {
-
-                    <input type="password" [(ngModel)]="downloadPassword" name="anonymousDownloadPassword" minlength="6"
-                        placeholder="Mot de passe" />
-
-                    <button type="button" class="download-button" [disabled]="downloadPassword.length < 6"
-                        (click)="onProtectedDownload()">
-                        Télécharger le fichier
-                    </button>
-
-                    } @else {
-
-                    <button type="button" (click)="onAnonymousDownload()">
-                        Télécharger le fichier
-                    </button>
-
-                    }
-
                 </div>
                 }
 
