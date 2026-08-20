@@ -106,37 +106,9 @@
                 </p>
                 }
 
-                @if (anonymousDownloadUrl) {
-                <div class="anonymous-link">
-
-                    <p>Votre lien de téléchargement :</p>
-
-                    <span>{{ anonymousDownloadUrl }}</span>
-
-                    @if (anonymousPasswordProtected) {
-
-                    <input type="password" [(ngModel)]="downloadPassword" name="anonymousDownloadPassword" minlength="6"
-                        placeholder="Mot de passe" />
-
-                    <button type="button" class="download-button" [disabled]="downloadPassword.length < 6"
-                        (click)="onProtectedDownload()">
-                        Télécharger le fichier
-                    </button>
-
-                    @if (errorMessage) {
-                    <p class="error-message">
-                        {{ errorMessage }}
-                    </p>
-                    }
-
-                    } @else {
-
-                    <button type="button" (click)="onAnonymousDownload()">
-                        Télécharger le fichier
-                    </button>
-
-                    }
-
+                 @if (errorMessage) {
+                <div class="error-message">
+                    {{ errorMessage }}
                 </div>
                 }
 
@@ -174,13 +146,33 @@
                 </div>
                 }
 
+                @if (anonymousDownloadUrl) {
+                <div class="anonymous-link">
 
-                @if (errorMessage) {
-                <div class="error-message">
-                    {{ errorMessage }}
+                    <p>Votre lien de téléchargement :</p>
+
+                    <span>{{ anonymousDownloadUrl }}</span>
+
+                    @if (anonymousPasswordProtected) {
+
+                    <input type="password" [(ngModel)]="downloadPassword" name="anonymousDownloadPassword" minlength="6"
+                        placeholder="Mot de passe" />
+
+                    <button type="button" class="download-button" [disabled]="downloadPassword.length < 6"
+                        (click)="onProtectedDownload()">
+                        Télécharger le fichier
+                    </button>
+
+                    } @else {
+
+                    <button type="button" (click)="onAnonymousDownload()">
+                        Télécharger le fichier
+                    </button>
+
+                    }
+
                 </div>
                 }
-
 
                 @if (!isLoading && !errorMessage && files.length === 0) {
                 <div class="empty-state">
