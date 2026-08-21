@@ -1,73 +1,159 @@
 <main class="files-page">
 
-    <!-- Zone principale -->
-    <div class="workspace">
+    @if (isDownloadPage) {
 
-        <!-- Barre supérieure -->
-        <header class="top-bar">
+    <section class="public-upload-page">
 
-            <div class="account-box">
+        <header class="public-header">
+            <div class="public-header__content">
 
-                @if (isAuthenticated()) {
+                <a routerLink="/" class="brand" aria-label="Accueil DataShare">
+                    DataShare
+                </a>
 
-                <div class="account-info">
-                    <strong>Bienvenue {{ userEmail }}</strong>
-                    <span>DataShare</span>
+                <a routerLink="/" class="login-button">
+                    Téléverser
+                </a>
+
+            </div>
+        </header>
+
+        <div class="public-upload-content">
+
+            <section class="upload-card download-card" aria-labelledby="download-title">
+
+                @if (isDownloadInfoLoading) {
+
+                <p class="download-state">
+                    Chargement du fichier...
+                </p>
+
+                } @else if (downloadFileInfo) {
+
+                <h1 id="download-title">
+                    Télécharger un fichier
+                </h1>
+
+                <div class="download-file-info">
+
+                    <div class="download-file-name">
+                        📄 {{ downloadFileInfo.originalName }}
+                    </div>
+
+                    <div class="download-file-size">
+                        {{ formatFileSize(downloadFileInfo.size) }}
+                    </div>
+
                 </div>
 
-                <button type="button" class="logout-button" (click)="onLogout()">
-                    Déconnexion
+                <div class="download-notice" role="status">
+                    Ce fichier est disponible jusqu'au
+                    {{ downloadFileInfo.expiresAt | date:'dd/MM/yyyy à HH:mm' }}
+                </div>
+
+                @if (downloadFileInfo.passwordProtected) {
+
+                <div class="form-group">
+
+                    <label for="sharedDownloadPassword">
+                        Mot de passe
+                    </label>
+
+                    <input id="sharedDownloadPassword" type="password" [(ngModel)]="downloadPassword"
+                        name="sharedDownloadPassword" autocomplete="current-password"
+                        aria-describedby="download-password-help" />
+
+                    <small id="download-password-help">
+                        Saisissez le mot de passe fourni avec le lien.
+                    </small>
+
+                </div>
+
+                }
+
+                @if (errorMessage) {
+
+                <p class="error-message" role="alert" aria-live="assertive">
+                    {{ errorMessage }}
+                </p>
+
+                }
+
+                <button type="button" class="download-button" (click)="onSharedDownload()">
+                    Télécharger
                 </button>
 
                 } @else {
+
+                <h1 id="download-title">
+                    Télécharger un fichier
+                </h1>
+
+                <p class="error-message" role="alert">
+                    {{ errorMessage }}
+                </p>
+
+                }
+
+            </section>
+
+        </div>
+
+        <footer class="public-footer">
+            Copyright DataShare© 2026
+        </footer>
+
+    </section>
+
+    } @else if (!isAuthenticated()) {
+
+    <section class="public-upload-page">
+
+        <header class="public-header">
+            <div class="public-header__content">
+
+                <a routerLink="/" class="brand" aria-label="Accueil DataShare">
+                    DataShare
+                </a>
 
                 <a routerLink="/login" class="login-button">
                     Se connecter
                 </a>
 
-                <a routerLink="/register" class="register-button">
-                    Créer un compte
-                </a>
-
-                }
-
             </div>
-
         </header>
 
+        <div class="public-upload-content">
 
-        <div class="page-content">
+            @if (!selectedFile && !anonymousDownloadUrl) {
 
-            <!-- Carte d'upload -->
-            <section class="upload-section">
+            <div class="upload-intro">
+                <h1>Tu veux partager un fichier ?</h1>
 
-                <div class="upload-header">
-                    <div class="upload-icon">+</div>
+                <label for="file" class="upload-circle" aria-label="Sélectionner un fichier">
+                    <span class="upload-circle__inner">
+                        ↑
+                    </span>
+                </label>
 
-                    <div>
-                        <h2>Envoyer un fichier</h2>
-                        <p>Partagez votre fichier simplement.</p>
-                    </div>
+                <input id="file" class="visually-hidden" type="file" (change)="onFileSelected($event)" />
+            </div>
+
+            } @else {
+
+            <section class="upload-card" aria-labelledby="upload-title">
+
+                <h1 id="upload-title">
+                    Envoyer un fichier
+                </h1>
+
+                @if (selectedFile) {
+
+                <div class="selected-file">
+                    <strong>{{ selectedFile.name }}</strong>
                 </div>
 
-
-                <form (ngSubmit)="onUpload()">
-
-                    <div class="form-group">
-                        <label for="file">
-                            Fichier
-                        </label>
-
-                        <input id="file" type="file" (change)="onFileSelected($event)" />
-                    </div>
-
-
-                    @if (selectedFile) {
-                    <div class="selected-file">
-                        <strong>{{ selectedFile.name }}</strong>
-                    </div>
-                    }
-
+                <form class="upload-form" (ngSubmit)="onUpload()">
 
                     <div class="form-group">
                         <label for="expirationDays">
@@ -87,42 +173,53 @@
                         </label>
 
                         <input id="password" type="password" name="password" [(ngModel)]="password" minlength="6"
-                            autocomplete="new-password" />
+                            autocomplete="new-password" aria-describedby="password-help" />
 
-                        <small>
+                        <small id="password-help">
                             Facultatif — 6 caractères minimum.
                         </small>
                     </div>
 
-                    <button class="upload-button" type="submit" [disabled]="isUploading || !selectedFile">
+                    <button class="upload-button" type="submit" [disabled]="isUploading">
                         {{ isUploading ? 'Envoi en cours...' : 'Transférer' }}
                     </button>
 
                 </form>
 
+                }
+
                 @if (successMessage) {
-                <p class="success-message">
+                <p class="success-message" role="status" aria-live="polite">
                     {{ successMessage }}
                 </p>
                 }
 
-                 @if (errorMessage) {
-                <div class="error-message">
+                @if (errorMessage) {
+                <p class="error-message" role="alert" aria-live="assertive">
                     {{ errorMessage }}
-                </div>
+                </p>
                 }
 
-                            @if (anonymousDownloadUrl) {
+                @if (anonymousDownloadUrl) {
+
                 <div class="anonymous-link">
 
-                    <p>Votre lien de téléchargement :</p>
+                    <p>
+                        Votre lien de téléchargement :
+                    </p>
 
-                    <span>{{ anonymousDownloadUrl }}</span>
+                    <span class="download-url">
+                        {{ anonymousDownloadUrl }}
+                    </span>
 
                     @if (anonymousPasswordProtected) {
 
-                    <input type="password" [(ngModel)]="downloadPassword" name="anonymousDownloadPassword" minlength="6"
-                        placeholder="Mot de passe" />
+                    <label for="anonymousDownloadPassword">
+                        Mot de passe
+                    </label>
+
+                    <input id="anonymousDownloadPassword" type="password" [(ngModel)]="downloadPassword"
+                        name="anonymousDownloadPassword" minlength="6" />
 
                     <button type="button" class="download-button" [disabled]="downloadPassword.length < 6"
                         (click)="onProtectedDownload()">
@@ -131,154 +228,9 @@
 
                     } @else {
 
-                    <button type="button" (click)="onAnonymousDownload()">
+                    <button type="button" class="download-button" (click)="onAnonymousDownload()">
                         Télécharger le fichier
                     </button>
-
-                    }
-
-                </div>
-                }
-
-            </section>
-
-
-            <!-- Partie centrale -->
-            @if (isAuthenticated()) {
-            <section class="files-card">
-
-                <div class="files-header">
-
-                    <div>
-
-                        <h1>Mes fichiers</h1>
-
-                        <p>
-                            Retrouvez vos fichiers envoyés et leur date
-                            d'expiration.
-                        </p>
-                    </div>
-
-                    @if (!isLoading && files.length > 0) {
-                    <div class="files-count">
-                        {{ files.length }}
-                        {{ files.length === 1 ? 'fichier' : 'fichiers' }}
-                    </div>
-                    }
-
-                </div>
-
-
-                @if (isLoading) {
-                <div class="state-message">
-                    Chargement des fichiers...
-                </div>
-                }
-
-                @if (!isLoading && !errorMessage && files.length === 0) {
-                <div class="empty-state">
-
-                    <div class="empty-icon">
-                        +
-                    </div>
-
-                    <h2>Aucun fichier</h2>
-
-                    <p>
-                        Votre historique apparaîtra ici après
-                        votre premier transfert.
-                    </p>
-
-                </div>
-                }
-
-
-                @if (!isLoading && files.length > 0) {
-
-                <div class="files-list">
-
-                    @for (file of files; track file.id) {
-
-                    <article class="file-item">
-
-                        <div class="file-main">
-
-                            <div class="file-icon">
-                                ▤
-                            </div>
-
-                            <div class="file-information">
-
-                                <h2>
-                                    {{ file.originalName }}
-                                </h2>
-
-                                <div class="file-meta">
-
-                                    <span>
-                                        {{ getFileTypeLabel(file.mimeType) }}
-                                    </span>
-
-                                    <span>
-                                        {{ formatFileSize(file.size) }}
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="file-dates">
-
-                            <div>
-                                <span class="date-label">
-                                    Déposé
-                                </span>
-
-                                <strong>
-                                    {{ file.uploadedAt | date:'dd/MM/yyyy à HH:mm' }}
-                                </strong>
-                            </div>
-
-                            <div>
-                                <span class="date-label">
-                                    Expire
-                                </span>
-
-                                <strong>
-                                    {{ file.expiresAt | date:'dd/MM/yyyy à HH:mm' }}
-                                </strong>
-                            </div>
-
-                        </div>
-
-                        <div class="file-actions">
-
-                            @if (
-                            file.passwordProtected &&
-                            protectedFileToken === file.downloadToken
-                            ) {
-                            <input type="password" [(ngModel)]="downloadPassword" name="downloadPassword" minlength="6"
-                                placeholder="Mot de passe" />
-                            }
-
-                            <button type="button" class="download-button" [disabled]="
-      file.passwordProtected &&
-      protectedFileToken === file.downloadToken &&
-      downloadPassword.length < 6
-    " (click)="onDownloadClick(file)">
-                                Télécharger
-                            </button>
-
-                            <button type="button" class="delete-button" (click)="onDelete(file.id)">
-                                Supprimer
-                            </button>
-
-                        </div>
-
-                    </article>
 
                     }
 
@@ -292,6 +244,398 @@
 
         </div>
 
-    </div>
+        <footer class="public-footer">
+            Copyright DataShare© 2026
+        </footer>
+
+    </section>
+
+    } @else {
+
+    <section class="account-dashboard">
+
+        <aside class="account-sidebar" aria-label="Navigation de l'espace personnel">
+            <div class="account-sidebar__brand">
+                DataShare
+            </div>
+
+            <nav class="account-sidebar__nav">
+                <button
+                    type="button"
+                    class="account-sidebar__action"
+                    (click)="openAccountUpload()"
+                >
+                    Téléverser
+                </button>
+            </nav>
+
+            <div class="account-sidebar__footer">
+                Copyright DataShare© 2026
+            </div>
+        </aside>
+
+        <div class="account-main">
+
+            <header class="account-topbar">
+
+                <details class="mobile-menu">
+                    <summary aria-label="Ouvrir le menu">
+                        ☰
+                    </summary>
+
+                    <div class="mobile-menu__panel">
+                        <strong>DataShare</strong>
+
+                        <button
+                            type="button"
+                            class="mobile-menu__upload"
+                            (click)="openAccountUpload()"
+                        >
+                            Téléverser
+                        </button>
+
+                        <button
+                            type="button"
+                            class="mobile-menu__logout"
+                            (click)="onLogout()"
+                        >
+                            Déconnexion
+                        </button>
+                    </div>
+                </details>
+
+                <span class="account-mobile-brand">
+                    DataShare
+                </span>
+
+                <div class="account-topbar__actions">
+                    <span class="account-email">
+                        {{ userEmail }}
+                    </span>
+
+                    <button
+                        type="button"
+                        class="account-logout"
+                        (click)="onLogout()"
+                    >
+                        Déconnexion
+                    </button>
+                </div>
+
+            </header>
+
+            @if (showAccountUpload) {
+
+            <div
+                class="upload-modal-backdrop"
+                (click)="closeAccountUpload()"
+            >
+
+                <section
+                    id="account-upload-form"
+                    class="upload-modal"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="upload-modal-title"
+                    (click)="$event.stopPropagation()"
+                >
+
+                    <div class="upload-modal__header">
+                        <h2 id="upload-modal-title">
+                            Envoyer un fichier
+                        </h2>
+
+                        <button
+                            type="button"
+                            class="upload-modal__close"
+                            aria-label="Fermer"
+                            [disabled]="isUploading"
+                            (click)="closeAccountUpload()"
+                        >
+                            ×
+                        </button>
+                    </div>
+
+                    <form (ngSubmit)="onUpload()">
+
+                        <div class="account-upload-field">
+                            <label for="account-file">
+                                Fichier
+                            </label>
+
+                            <input
+                                id="account-file"
+                                type="file"
+                                (change)="onFileSelected($event)"
+                            />
+                        </div>
+
+                        @if (selectedFile) {
+                        <div class="account-selected-file">
+                            <strong>{{ selectedFile.name }}</strong>
+                        </div>
+                        }
+
+                        <div class="account-upload-field">
+                            <label for="account-expiration">
+                                Durée de validité
+                            </label>
+
+                            <select
+                                id="account-expiration"
+                                name="accountExpirationDays"
+                                [(ngModel)]="expirationDays"
+                            >
+                                <option [ngValue]="1">1 jour</option>
+                                <option [ngValue]="3">3 jours</option>
+                                <option [ngValue]="7">7 jours</option>
+                            </select>
+                        </div>
+
+                        <div class="account-upload-field">
+                            <label for="account-password">
+                                Mot de passe de protection
+                            </label>
+
+                            <input
+                                id="account-password"
+                                type="password"
+                                name="accountPassword"
+                                [(ngModel)]="password"
+                                minlength="6"
+                                autocomplete="new-password"
+                                aria-describedby="account-password-help"
+                            />
+
+                            <small id="account-password-help">
+                                Facultatif — 6 caractères minimum.
+                            </small>
+                        </div>
+
+                        @if (uploadErrorMessage) {
+                        <p
+                            class="account-upload-error"
+                            role="alert"
+                            aria-live="assertive"
+                        >
+                            {{ uploadErrorMessage }}
+                        </p>
+                        }
+
+                        <button
+                            type="submit"
+                            class="account-upload-submit"
+                            [disabled]="isUploading || !selectedFile"
+                        >
+                            {{ isUploading ? 'Envoi en cours...' : 'Transférer' }}
+                        </button>
+
+                    </form>
+
+                </section>
+
+            </div>
+
+            }
+
+            <div class="account-content">
+
+                <div class="account-title-row">
+                    <h1>Mes fichiers</h1>
+
+                    @if (!isLoading && files.length > 0) {
+                    <span class="account-file-count">
+                        {{ files.length }}
+                        {{ files.length === 1 ? 'fichier' : 'fichiers' }}
+                    </span>
+                    }
+                </div>
+
+                <div class="file-filters" role="group" aria-label="Filtrer les fichiers">
+                    <button
+                        type="button"
+                        [class.active]="fileFilter === 'all'"
+                        [attr.aria-pressed]="fileFilter === 'all'"
+                        (click)="fileFilter = 'all'"
+                    >
+                        Tous
+                    </button>
+
+                    <button
+                        type="button"
+                        [class.active]="fileFilter === 'active'"
+                        [attr.aria-pressed]="fileFilter === 'active'"
+                        (click)="fileFilter = 'active'"
+                    >
+                        Actifs
+                    </button>
+
+                    <button
+                        type="button"
+                        [class.active]="fileFilter === 'expired'"
+                        [attr.aria-pressed]="fileFilter === 'expired'"
+                        (click)="fileFilter = 'expired'"
+                    >
+                        Expiré
+                    </button>
+                </div>
+
+                @if (fileActionSuccessMessage) {
+                <div class="account-success" role="status" aria-live="polite">
+                    {{ fileActionSuccessMessage }}
+                </div>
+                }
+
+                @if (fileActionErrorMessage) {
+                <div class="account-error" role="alert" aria-live="assertive">
+                    {{ fileActionErrorMessage }}
+                </div>
+                }
+
+                @if (isLoading) {
+                <div class="account-state" role="status">
+                    Chargement des fichiers...
+                </div>
+                }
+
+                @if (!isLoading && filteredFiles.length === 0) {
+                <div class="account-empty">
+                    <div class="account-empty__icon">＋</div>
+                    <h2>Aucun fichier</h2>
+                    <p>
+                        Aucun fichier ne correspond à ce filtre.
+                    </p>
+                </div>
+                }
+
+                @if (!isLoading && filteredFiles.length > 0) {
+
+                <div class="account-files-list">
+
+                    @for (file of filteredFiles; track file.id) {
+
+                    <article
+                        class="account-file-row"
+                        [class.account-file-row--expired]="isExpired(file)"
+                    >
+
+                        <div class="account-file-main">
+                            <span class="account-file-icon" aria-hidden="true">
+                                ▤
+                            </span>
+
+                            <div class="account-file-details">
+                                <h2 title="{{ file.originalName }}">
+                                    {{ file.originalName }}
+                                </h2>
+
+                                <div class="account-file-meta">
+                                    <span>{{ getFileTypeLabel(file.mimeType) }}</span>
+                                    <span>{{ formatFileSize(file.size) }}</span>
+
+                                    @if (file.passwordProtected) {
+                                    <span class="account-protected">
+                                        Protégé
+                                    </span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="account-file-expiration">
+                            @if (isExpired(file)) {
+                            <span class="expiration-label expiration-label--expired">
+                                Expiré
+                            </span>
+
+                            <strong>
+                                Le fichier n'est plus disponible.
+                            </strong>
+                            } @else {
+                            <span class="expiration-label">
+                                Expire le
+                            </span>
+
+                            <strong>
+                                {{ file.expiresAt | date:'dd/MM/yyyy à HH:mm' }}
+                            </strong>
+                            }
+                        </div>
+
+                        <div class="account-file-actions">
+
+                            @if (
+                                file.passwordProtected &&
+                                protectedFileToken === file.downloadToken &&
+                                !isExpired(file)
+                            ) {
+                            <div class="account-password-download">
+                                <label
+                                    [for]="'file-password-' + file.id"
+                                    class="visually-hidden"
+                                >
+                                    Mot de passe pour {{ file.originalName }}
+                                </label>
+
+                                <input
+                                    [id]="'file-password-' + file.id"
+                                    type="password"
+                                    [(ngModel)]="downloadPassword"
+                                    name="downloadPassword"
+                                    minlength="6"
+                                    placeholder="Mot de passe"
+                                />
+                            </div>
+                            }
+
+                            @if (!isExpired(file)) {
+                            <button
+                                type="button"
+                                class="account-download-button"
+                                [disabled]="
+                                    file.passwordProtected &&
+                                    protectedFileToken === file.downloadToken &&
+                                    downloadPassword.length < 6
+                                "
+                                (click)="onDownloadClick(file)"
+                            >
+                                Télécharger
+                            </button>
+
+                            <button
+                                type="button"
+                                class="account-share-button"
+                                (click)="onShare(file)"
+                            >
+                                Partager
+                            </button>
+                            }
+
+                            <button
+                                type="button"
+                                class="account-delete-button"
+                                (click)="onDelete(file.id)"
+                                [disabled]="deletingFileId !== null"
+                                [attr.aria-label]="'Supprimer ' + file.originalName"
+                            >
+                                {{ deletingFileId === file.id ? 'Suppression...' : 'Supprimer' }}
+                            </button>
+
+                        </div>
+
+                    </article>
+
+                    }
+
+                </div>
+
+                }
+
+            </div>
+
+        </div>
+
+    </section>
+    }
 
 </main>

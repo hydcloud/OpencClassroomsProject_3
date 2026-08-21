@@ -6,6 +6,8 @@ import { environment } from '../../../environments/environment';
 import { FileHistoryResponse } from '../../models/file-history-response';
 import { FileUploadResponse } from '../../models/file-upload-response';
 
+import { DownloadFileInfoResponse } from '../../models/download-file-info-response';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -89,6 +91,14 @@ export class FilesService {
       {
         responseType: 'blob'
       }
+    );
+  }
+
+  getFileInfo(
+    token: string
+  ): Observable<DownloadFileInfoResponse> {
+    return this.http.get<DownloadFileInfoResponse>(
+      `${this.apiUrl}/${token}`
     );
   }
 }

@@ -1,5 +1,6 @@
 package fr.datashare.backend.service;
 
+import fr.datashare.backend.dto.file.DownloadFileInfoResponse;
 import fr.datashare.backend.entity.DownloadLink;
 import fr.datashare.backend.entity.StoredFile;
 import org.springframework.core.io.Resource;
@@ -56,6 +57,23 @@ public class DownloadService {
                 resource,
                 storedFile.getOriginalName(),
                 storedFile.getMimeType()
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public DownloadFileInfoResponse getFileInfo(String token) {
+
+        DownloadLink downloadLink =
+                downloadLinkService.findValidLink(token);
+
+        StoredFile storedFile =
+                downloadLink.getStoredFile();
+
+        return new DownloadFileInfoResponse(
+                storedFile.getOriginalName(),
+                storedFile.getSize(),
+                storedFile.getExpiresAt(),
+                storedFile.getPasswordHash() != null
         );
     }
 

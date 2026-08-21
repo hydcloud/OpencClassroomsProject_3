@@ -1,5 +1,6 @@
 package fr.datashare.backend.controller;
 
+import fr.datashare.backend.dto.file.DownloadFileInfoResponse;
 import fr.datashare.backend.dto.file.FileUploadResponse;
 import fr.datashare.backend.service.FileDeletionService;
 import fr.datashare.backend.service.FileHistoryService;
@@ -96,6 +97,16 @@ public class FileController {
         return fileHistoryService.getHistory(
                 authentication.getName()
         );
+    }
+
+    @GetMapping("/{token}")
+    public ResponseEntity<DownloadFileInfoResponse> getFileInfo(
+            @PathVariable String token
+    ) {
+        DownloadFileInfoResponse response =
+                downloadService.getFileInfo(token);
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/{token}/file")

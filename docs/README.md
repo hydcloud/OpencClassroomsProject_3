@@ -419,20 +419,24 @@ docs/SECURITY.md
 
 # Accessibilité et interface utilisateur
 
-Une revue de l’interface frontend est menée en s’appuyant sur les recommandations des **WCAG 2.2 (Web Content Accessibility Guidelines)**, avec une attention particulière portée aux bonnes pratiques de niveau **AA**.
+Une revue de l’interface frontend est menée en s’appuyant sur les recommandations des WCAG 2.2 (Web Content Accessibility Guidelines), avec une attention particulière portée aux bonnes pratiques de niveau AA.
 
 Les points pris en compte sont notamment :
 
-- utilisation d’éléments HTML sémantiques ;
-- association explicite des champs de formulaire à leurs labels ;
-- navigation au clavier et visibilité du focus ;
-- intitulés compréhensibles pour les boutons, liens et actions ;
-- restitution textuelle et explicite des messages d’erreur ;
-- vérification des contrastes entre les textes, contrôles et arrière-plans ;
-- utilisation d’attributs ARIA lorsque la sémantique HTML native ne suffit pas ;
-- adaptation de l’affichage aux différentes tailles d’écran afin de préserver la lisibilité et l’utilisation de l’interface.
+- Utilisation d’éléments HTML sémantiques ;
+- Association explicite des champs de formulaire à leurs labels ;
+- Navigation au clavier et visibilité du focus ;
+- Intitulés compréhensibles pour les boutons, liens et actions ;
+- Restitution textuelle et explicite des messages d’erreur et de confirmation ;
+- Annonce des messages dynamiques aux technologies d’assistance à l’aide notamment de aria-live, role="alert" et role="status" ;
+- Gestion accessible des composants interactifs, notamment des fenêtres modales (identification du rôle, fermeture au clavier et gestion du focus) ;
+- Vérification des contrastes entre les textes, contrôles et arrière-plans ;
+- Utilisation d’attributs ARIA lorsque la sémantique HTML native ne suffit pas ;
+- Adaptation de l’affichage aux différentes tailles d’écran et au zoom afin de préserver la lisibilité et l’utilisation de l’interface.
 
-Les vérifications d’accessibilité comprennent une navigation manuelle au clavier, le contrôle des formulaires et messages d’erreur ainsi qu’un audit d’accessibilité avec les outils du navigateur.
+Les vérifications d’accessibilité comprennent une navigation manuelle au clavier, le contrôle du comportement du focus, la vérification des formulaires et des messages d’erreur, des tests de redimensionnement et de zoom, ainsi qu’un audit d’accessibilité avec les outils du navigateur.
+
+Cette démarche vise à prendre en compte les principaux critères d’accessibilité applicables à l’interface, sans pour autant revendiquer une conformité complète aux WCAG 2.2 AA en l’absence d’un audit exhaustif.
 
 ---
 
@@ -685,6 +689,87 @@ docker compose down -v
 ```
 
 > ⚠️ Cette dernière commande supprime les données PostgreSQL du projet.
+
+---
+
+## Configuration du secret JWT
+
+Le backend utilise un secret JWT pour générer et vérifier les jetons d'authentification.
+
+Pour des raisons de sécurité, ce secret ne doit pas être stocké directement dans le code source ni ajouté au dépôt Git.
+
+L'application attend la variable d'environnement suivante :
+
+`JWT_SECRET`
+
+### Générer un secret JWT
+
+Un secret sécurisé peut être généré depuis un terminal Linux ou WSL avec OpenSSL :
+
+```bash
+openssl rand -base64 64
+```
+
+La commande génère une valeur aléatoire qui pourra être utilisée comme secret JWT.
+
+> **Important :** ne jamais publier ou commiter le secret généré.
+
+### Option 1 — Variable d'environnement Linux / WSL
+
+Il est possible de générer le secret et de l'enregistrer directement dans la variable d'environnement :
+
+```bash
+export JWT_SECRET="$(openssl rand -base64 64)"
+```
+
+Vérifier que la variable est correctement définie :
+
+```bash
+echo $JWT_SECRET
+```
+
+Puis démarrer le backend depuis le même terminal :
+
+```bash
+./mvnw spring-boot:run
+```
+
+> La variable définie avec `export` n'est disponible que dans la session courante du terminal.
+
+Pour la rendre persistante, elle peut être ajoutée au fichier `~/.bashrc` ou `~/.zshrc`, selon le shell utilisé.
+
+### Option 2 — IntelliJ IDEA
+
+Si le backend est démarré directement depuis IntelliJ IDEA, la variable définie dans un terminal Linux/WSL n'est pas nécessairement disponible dans l'environnement utilisé par l'IDE.
+
+Générer d'abord un secret :
+
+```bash
+openssl rand -base64 64
+```
+
+Copier la valeur générée, puis dans IntelliJ IDEA :
+
+1. Ouvrir **Run > Edit Configurations**.
+2. Sélectionner la configuration d'exécution du backend.
+3. Ajouter une variable d'environnement (dans Environment variables) :
+   - JWT_SECRET=***
+4. Enregistrer la configuration.
+5. Redémarrer l'application.
+
+Spring Boot récupère ensuite cette variable grâce à la configuration suivante :
+
+```properties
+jwt.secret=${JWT_SECRET}
+```
+
+### Sécurité
+
+- Ne jamais écrire le secret directement dans le code source.
+- Ne jamais commiter le secret dans Git.
+- Ne jamais publier le secret dans le README.
+- Générer un secret différent pour chaque environnement.
+- En production, utiliser un mécanisme sécurisé de gestion des secrets.
 
 ---
 
