@@ -1,49 +1,272 @@
-.login-page {
+:host {
+  display: block;
+}
+
+.auth-page {
   min-height: 100vh;
-  display: grid;
-  place-items: center;
-  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+
+  background:
+    linear-gradient(
+      172.84deg,
+      #ffb88c 2.29%,
+      #de6262 97.71%
+    );
+
+  font-family: 'DM Sans', sans-serif;
+}
+
+.auth-header {
+  width: 100%;
+  height: 72px;
+
+  display: flex;
+  justify-content: center;
+}
+
+.auth-header__content {
+  width: min(calc(100% - 32px), 1280px);
+  height: 72px;
+
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.brand {
+  flex: 1;
+
+  color: #000;
+  text-decoration: none;
+
+  font-size: 32px;
+  line-height: 40px;
+  font-weight: 700;
+}
+
+.upload-link {
+  min-width: 123px;
+  height: 40px;
+
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+
+  box-sizing: border-box;
+  padding: 12px;
+
+  background: #2c2c2c;
+  border-radius: 8px;
+
+  color: #f3eeea;
+  text-decoration: none;
+
+  font-size: 16px;
+  line-height: 16px;
+}
+
+.auth-content {
+  flex: 1;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 24px;
 }
 
 .login-card {
-  width: min(100%, 28rem);
-  padding: 2rem;
-  border: 1px solid #d8d8d8;
-  border-radius: 1rem;
-  background: white;
+  width: min(100%, 640px);
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  padding: 24px;
+
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.25);
+}
+
+h1 {
+  margin: 0;
+
+  text-align: center;
+
+  font-size: 28px;
+  line-height: 40px;
+  font-weight: 700;
 }
 
 form {
-  display: grid;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+label {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+
+  color: #1e1e1e;
 }
 
 input {
-  padding: 0.75rem;
-  border: 1px solid #b8b8b8;
-  border-radius: 0.5rem;
+  width: 100%;
+  min-height: 40px;
+
+  box-sizing: border-box;
+  padding: 12px 16px;
+
+  background: #fff;
+
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
 }
 
-button {
-  margin-top: 0.75rem;
-  padding: 0.85rem;
-  border: 0;
-  border-radius: 0.5rem;
-  cursor: pointer;
+input[aria-invalid='true'] {
+  border-color: #9c3333;
 }
 
-button:disabled {
-  cursor: wait;
-  opacity: 0.65;
+input:focus-visible,
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid #100218;
+  outline-offset: 3px;
 }
 
 .field-error,
 .form-error {
   margin: 0;
-  font-size: 0.875rem;
+
+  font-size: 14px;
+  line-height: 16px;
+
+  color: #9c3333;
 }
 
 .form-error {
-  font-weight: 600;
+  padding: 8px;
+
+  background: #ffe2e2;
+  border: 1px solid #e8a6a6;
+  border-radius: 8px;
+}
+
+.form-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+button {
+  width: 100%;
+  min-height: 40px;
+
+  padding: 12px;
+
+  border-radius: 8px;
+
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  line-height: 16px;
+
+  cursor: pointer;
+}
+
+.register-button {
+  border: 0;
+  background: transparent;
+
+  color: #e27f29;
+}
+
+.login-button {
+  background: rgba(255, 129, 45, 0.13);
+  border: 1px solid rgba(205, 94, 20, 0.5);
+
+  color: #ba681f;
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+.auth-footer {
+  width: min(calc(100% - 32px), 1280px);
+  min-height: 56px;
+
+  margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+
+  color: #fff;
+
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+@media (max-width: 600px) {
+
+  .auth-header__content {
+    width: calc(100% - 32px);
+  }
+
+  .auth-content {
+    padding: 24px;
+  }
+
+  .login-card {
+    width: 100%;
+    max-width: 345px;
+    min-height: 384px;
+
+    padding: 24px;
+    gap: 24px;
+
+    justify-content: flex-start;
+  }
+
+  .login-card h1 {
+    font-size: 28px;
+    line-height: 40px;
+  }
+
+  form {
+    gap: 16px;
+  }
+
+  .form-field {
+    gap: 8px;
+  }
+
+  input {
+    height: 40px;
+    min-height: 40px;
+  }
+
+  .form-actions {
+    gap: 8px;
+  }
+
+  .auth-footer {
+    width: calc(100% - 32px);
+    min-height: 56px;
+  }
 }

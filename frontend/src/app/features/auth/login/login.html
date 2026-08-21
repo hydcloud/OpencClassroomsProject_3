@@ -1,58 +1,92 @@
-<main class="login-page">
-  <section class="login-card">
-    <h1>Connexion</h1>
+<main class="auth-page">
+  <header class="auth-header">
+    <div class="auth-header__content">
+      <a class="brand" href="/" aria-label="Retour à l'accueil DataShare">
+        DataShare
+      </a>
 
-    <p>Connectez-vous pour envoyer et gérer vos fichiers.</p>
+      <a class="upload-link" href="/">
+        Téléverser
+      </a>
+    </div>
+  </header>
 
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-      <label for="email">Adresse email</label>
+  <section class="auth-content" aria-labelledby="login-title">
+    <div class="login-card">
+      <h1 id="login-title">Connexion</h1>
 
-      <input
-        id="email"
-        type="email"
-        formControlName="email"
-        autocomplete="email"
-      />
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+        <div class="form-field">
+          <label for="email">
+            Adresse email
+          </label>
 
-      @if (
-        loginForm.controls.email.touched &&
-        loginForm.controls.email.invalid
-      ) {
-        <p class="field-error">
-          Saisissez une adresse email valide.
-        </p>
-      }
+          <input id="email" type="email" formControlName="email" autocomplete="email" [attr.aria-invalid]="
+              loginForm.controls.email.touched &&
+              loginForm.controls.email.invalid
+            " [attr.aria-describedby]="
+              loginForm.controls.email.touched &&
+              loginForm.controls.email.invalid
+                ? 'email-error'
+                : null
+            " />
 
-      <label for="password">Mot de passe</label>
+          @if (
+          loginForm.controls.email.touched &&
+          loginForm.controls.email.invalid
+          ) {
+          <p id="email-error" class="field-error">
+            Saisissez une adresse email valide.
+          </p>
+          }
+        </div>
 
-      <input
-        id="password"
-        type="password"
-        formControlName="password"
-        autocomplete="current-password"
-      />
+        <div class="form-field">
+          <label for="password">
+            Mot de passe
+          </label>
 
-      @if (
-        loginForm.controls.password.touched &&
-        loginForm.controls.password.invalid
-      ) {
-        <p class="field-error">
-          Le mot de passe est obligatoire.
-        </p>
-      }
+          <input id="password" type="password" formControlName="password" autocomplete="current-password"
+            [attr.aria-invalid]="
+              loginForm.controls.password.touched &&
+              loginForm.controls.password.invalid
+            " [attr.aria-describedby]="
+              loginForm.controls.password.touched &&
+              loginForm.controls.password.invalid
+                ? 'password-error'
+                : null
+            " />
 
-      @if (errorMessage) {
-        <p class="form-error">
+          @if (
+          loginForm.controls.password.touched &&
+          loginForm.controls.password.invalid
+          ) {
+          <p id="password-error" class="field-error">
+            Le mot de passe est obligatoire.
+          </p>
+          }
+        </div>
+
+        @if (errorMessage) {
+        <p class="form-error" role="alert" aria-live="polite">
           {{ errorMessage }}
         </p>
-      }
+        }
 
-      <button
-        type="submit"
-        [disabled]="isLoading"
-      >
-        {{ isLoading ? 'Connexion...' : 'Se connecter' }}
-      </button>
-    </form>
+        <div class="form-actions">
+          <a routerLink="/register" class="register-link">
+            Créer un compte
+          </a>
+
+          <button class="login-button" type="submit" [disabled]="isLoading">
+            {{ isLoading ? 'Connexion...' : 'Se connecter' }}
+          </button>
+        </div>
+      </form>
+    </div>
   </section>
+
+  <footer class="auth-footer">
+    Copyright DataShare© 2026
+  </footer>
 </main>
