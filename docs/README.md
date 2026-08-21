@@ -417,6 +417,25 @@ docs/SECURITY.md
 
 ---
 
+# Accessibilité et interface utilisateur
+
+Une revue de l’interface frontend est menée en s’appuyant sur les recommandations des **WCAG 2.2 (Web Content Accessibility Guidelines)**, avec une attention particulière portée aux bonnes pratiques de niveau **AA**.
+
+Les points pris en compte sont notamment :
+
+- utilisation d’éléments HTML sémantiques ;
+- association explicite des champs de formulaire à leurs labels ;
+- navigation au clavier et visibilité du focus ;
+- intitulés compréhensibles pour les boutons, liens et actions ;
+- restitution textuelle et explicite des messages d’erreur ;
+- vérification des contrastes entre les textes, contrôles et arrière-plans ;
+- utilisation d’attributs ARIA lorsque la sémantique HTML native ne suffit pas ;
+- adaptation de l’affichage aux différentes tailles d’écran afin de préserver la lisibilité et l’utilisation de l’interface.
+
+Les vérifications d’accessibilité comprennent une navigation manuelle au clavier, le contrôle des formulaires et messages d’erreur ainsi qu’un audit d’accessibilité avec les outils du navigateur.
+
+---
+
 # Tests
 
 ## Backend
