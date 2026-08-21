@@ -8,7 +8,6 @@ backend/target/
 backend/.classpath
 backend/.project
 backend/.settings/
-backend/uploads/
 
 # IntelliJ
 .idea/
